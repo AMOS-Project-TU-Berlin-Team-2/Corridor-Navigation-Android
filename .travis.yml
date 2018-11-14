@@ -13,7 +13,7 @@ android:
     - extra-android-m2repository
     - android-28
     - sys-img-x86-android-28
-    - sys-img-armeabi-v7a-android-17
+    - sys-img-armeabi-v7a-android-28
 licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
