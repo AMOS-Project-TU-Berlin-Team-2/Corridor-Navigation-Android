@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AMOS_Mapbox</string>
+    <string name="application_name">Corridor Navigation</string>
     <string name="access_token" translatable="false">pk.eyJ1Ijoic2ViYW1pbyIsImEiOiJjam81azRkYjIwMmV6M3BxcnJpYWYzMjlkIn0.33YK9Y2Cjz6RrPXtGTwCgA</string>
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>

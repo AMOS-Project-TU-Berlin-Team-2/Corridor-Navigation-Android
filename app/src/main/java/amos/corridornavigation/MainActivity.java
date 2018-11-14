@@ -35,6 +35,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 // classes needed to add location layer
 
@@ -185,12 +186,12 @@ public class MainActivity extends AppCompatActivity implements LocationEngineLis
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
-                        Log.d(TAG, "Response code: " + response.code());
+                        Timber.d("Response code: %s", response.code());
                         if (response.body() == null) {
-                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            Timber.e("No routes found, make sure you set the right user and access token.");
                             return;
                         } else if (response.body().routes().size() < 1) {
-                            Log.e(TAG, "No routes found");
+                            Timber.e("No routes found");
                             return;
                         }
 
@@ -207,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements LocationEngineLis
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                        Log.e(TAG, "Error: " + throwable.getMessage());
+                        Timber.e("Error: %s", throwable.getMessage());
                     }
                 });
     }

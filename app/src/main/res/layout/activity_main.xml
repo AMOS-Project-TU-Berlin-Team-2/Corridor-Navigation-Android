@@ -17,6 +17,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="actionButtonPressed"
         app:srcCompat="@color/colorAccent"
         mapbox:layout_constraintBottom_toBottomOf="parent"
