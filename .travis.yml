@@ -14,6 +14,11 @@ android:
     - android-28
     - sys-img-x86-android-28
     - sys-img-armeabi-v7a-android-28
+
+    - sys-img-armeabi-v7a-android-19
+env:
+  global:
+    - export ANDROID_SDK_ROOT=/usr/local/android-sdk
 licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
