@@ -18,4 +18,5 @@ licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 before_install:
-    - yes | sdkmanager "platforms;build-tools;android-28"
+    - yes | sdkmanager "platforms;android-28"
+    - yes | sdkmanager "build-tools;android-28"
