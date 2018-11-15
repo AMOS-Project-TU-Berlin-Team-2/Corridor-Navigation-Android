@@ -7,7 +7,7 @@ A car navigation system built by students of the Technische Universität Berlin.
 
 ## Installation
 
-New releases are built weekly. Get the latest release from the releases section on this repo.
+New releases are built weekly on Thursday afternoon. Get the latest release as an APK from the releases section on this repo.
 
 ## Setup development environment
 ```
