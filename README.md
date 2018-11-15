@@ -7,7 +7,7 @@ A car navigation system built by students of the Technische Universität Berlin.
 
 ## Installation
 
-New releases are built weekly on Thursday afternoon. Get the latest release as an APK from the [releases section](https://github.com/AMOS-Project-TU-Berlin-Team-2/Corridor-Navigation-Android/releases) on this repo.
+New releases are built weekly on Thursday afternoon. Get the latest release as an APK from the [releases section](https://github.com/AMOS-Project-TU-Berlin-Team-2/Corridor-Navigation-Android/releases) in this repository.
 
 ## Setup development environment
 ```
