@@ -13,6 +13,7 @@ android:
   - extra-android-m2repository
 script:
 - "./gradlew test"
+- "./gradlew assembleDebug"
 licenses:
 - android-sdk-preview-.+
 - android-sdk-license-.+
