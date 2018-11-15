@@ -1,0 +1,33 @@
+sudo: required
+language: android
+jdk:
+- oraclejdk8
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-28.0.0
+  - android-28
+  - extra-android-support
+  - extra-google-m2repository
+  - extra-android-m2repository
+script:
+- "./gradlew test"
+- "./gradlew assembleDebug"
+licenses:
+- android-sdk-preview-.+
+- android-sdk-license-.+
+- google-gdk-license-.+
+before_install:
+- mkdir -p $ANDROID_HOME/licenses
+- echo -e "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_HOME/licenses/android-sdk-license
+- echo -e "84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-preview-license
+- yes | sdkmanager "platforms;android-28"
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: NzG2jjNmu8lVbpoLVQux5TShNM3cLHaGYvWEa7tV1B1e69AQI+7LwUh7PMN3Qc9aN0ljcyCvJ6qblIOqfUfiU4U4mZLQkOie0AbhoCXPy2XOtY7XPAlgSuIZtrnIRIp7grU8jHXlPG8kCcB7r/3FwGOABhNDJ8mgEPqLKbdfA9qScpeuduvJ6C8mrE5PkaepVlGclIR7qHhs/mfwcmqT28PaHeVfH+r56CtMD/zf4K22Z0dYYGNyqYLH9vtNp+XM6Rq5n1pLwtfep/H9kxf/WXWVB7jWtE8sOjdIocOp7SzwEq0QMOjnK099NjPZVpDxYSey+Wm0dRz8+KT2e4r1vfHQaTEiu/1tmucll+Mfue+heiWaASrEapjqnGaFuj+xQ+E6Gm4ZRQEtxgwXj47hrw+hn86YQ/RNn+/HAqcOZHDV9PY0YffoMwo2lJIBl2TwbGGDFBiN3pXS889NV1oaHGMCGZTwO3Zb54S6QaE+5njcIVOw+9puaw7/vcwBuJkkHIElfnRuVIRJvh1d+TGcNdbe/QBv+tUWTkWb/xIWdO+VeamjOirKCXFdmXVVq9r4Z4YOTyPRPZxAI2zzJz+7dgLO7zGerwCmjSd70pNXNCi/hy8iYQcMh3Y1DIG22dRPnyVTqJNgEQZUdy2HWpZczgWlU16zmdn7qa9jcW6EiO0=
+  file: app/build/outputs/apk/debug/app-debug.apk
+  on:
+    tags: true
