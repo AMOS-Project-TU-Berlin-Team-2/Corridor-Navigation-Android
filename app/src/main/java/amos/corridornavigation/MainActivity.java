@@ -293,14 +293,22 @@ public class MainActivity extends AppCompatActivity implements LocationEngineLis
     public void onSearchButtonClicked(View view) {
         EditText editText = (EditText) findViewById(R.id.main_searchbar_input);
         String address = editText.getText().toString();
-
+        MapboxGeocoding client;
         try {
-            MapboxGeocoding client = MapboxGeocoding.builder()
-                    .accessToken(getString(R.string.access_token))
-                    .proximity(Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude()))
-                    .query(address)
-                    .build();
-
+            if(originLocation != null) {
+                client = MapboxGeocoding.builder()
+                        .accessToken(getString(R.string.access_token))
+                        .proximity(Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude()))
+                        .query(address)
+                        .build();
+            }
+            else
+            {
+                client = MapboxGeocoding.builder()
+                        .accessToken(getString(R.string.access_token))
+                        .query(address)
+                        .build();
+            }
             client.enqueueCall(new Callback<GeocodingResponse>() {
                 @Override
                 public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
