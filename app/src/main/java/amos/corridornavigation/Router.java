@@ -82,7 +82,17 @@ public class Router {
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
                         } else {
-                            navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRoute);
+                            int condition = 0;
+                            if (condition == 0) {
+                                navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteGreen);
+                            }
+                            else if (condition == 1) {
+                                navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteYellow);
+                            }
+                            else {
+                                navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteRed);
+                            }
+                            //navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRoute);
                         }
                         navigationMapRoute.addRoute(currentRoute);
                     }

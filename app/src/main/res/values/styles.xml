@@ -7,4 +7,38 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="NavigationMapRouteGreen">
+        <!-- Colors -->
+        <item name="routeColor">#00FF00</item>
+        <!--<item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item> // don't know about traffic colors, maybe they can be removed for now
+        <item name="routeSevereCongestionColor">@color/mapbox_navigation_route_layer_congestion_red</item>
+        <item name="routeShieldColor">@color/mapbox_navigation_route_shield_layer_color</item>-->
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+        <item name="upcomingManeuverArrowColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_color</item>
+        <item name="upcomingManeuverArrowBorderColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color</item>
+    </style>
+    <style name="NavigationMapRouteYellow">
+        <!-- Colors -->
+        <item name="routeColor">#FFFF00</item>
+        <!--<item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item> // don't know about traffic colors, maybe they can be removed for now
+        <item name="routeSevereCongestionColor">@color/mapbox_navigation_route_layer_congestion_red</item>
+        <item name="routeShieldColor">@color/mapbox_navigation_route_shield_layer_color</item>-->
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+        <item name="upcomingManeuverArrowColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_color</item>
+        <item name="upcomingManeuverArrowBorderColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color</item>
+    </style>
+    <style name="NavigationMapRouteRed">
+        <!-- Colors -->
+        <item name="routeColor">#FF0000</item>
+        <!--<item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item> // don't know about traffic colors, maybe they can be removed for now
+        <item name="routeSevereCongestionColor">@color/mapbox_navigation_route_layer_congestion_red</item>
+        <item name="routeShieldColor">@color/mapbox_navigation_route_shield_layer_color</item>-->
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+        <item name="upcomingManeuverArrowColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_color</item>
+        <item name="upcomingManeuverArrowBorderColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color</item>
+    </style>
 </resources>
