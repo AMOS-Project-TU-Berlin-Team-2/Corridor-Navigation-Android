@@ -21,10 +21,11 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="556dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:gravity="bottom"
         android:orientation="horizontal"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintHorizontal_bias="0.0"
@@ -37,7 +38,9 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/main_searchbar_input"
-            android:hint="@string/address" />
+            android:elevation="10dp"
+            android:hint="@string/address"
+            android:padding="10dp" />
 
         <View
             android:layout_width="10dp"
@@ -48,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/search_button"
+            android:elevation="10dp"
             android:onClick="onSearchButtonClicked"
             android:padding="10dp"
             android:text="@string/search"
@@ -65,13 +69,13 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="actionButtonPressed"
-        app:srcCompat="@color/colorAccent"
         mapbox:layout_constraintBottom_toBottomOf="parent"
         mapbox:layout_constraintEnd_toEndOf="parent"
         mapbox:layout_constraintHorizontal_bias="0.975"
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent"
-        mapbox:layout_constraintVertical_bias="0.982" />
+        mapbox:layout_constraintVertical_bias="0.745"
+        mapbox:srcCompat="@drawable/mapbox_compass_icon" />
 
 
 </android.support.constraint.ConstraintLayout>
