@@ -21,7 +21,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="78dp"
-        android:layout_marginBottom="225dp"
+        android:layout_marginBottom="237dp"
         android:contentDescription="@string/application_name"
         app:srcCompat="@drawable/ic_logo_corridor_navigation" />
 
