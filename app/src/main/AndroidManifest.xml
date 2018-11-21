@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="amos.corridornavigation">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -9,7 +10,8 @@
         android:label="@string/application_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:label,android:allowBackup">
         <activity android:name=".MainActivity">
             <intent-filter android:priority="0">
                 <action android:name="android.intent.action.VIEW"/>
