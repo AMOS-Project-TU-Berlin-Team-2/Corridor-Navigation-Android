@@ -168,18 +168,12 @@ public class MainActivity extends MapContext {
     public void onNavigateButtonClicked(View view) {
 
         try {
-            boolean simulateRoute = false;
+            boolean simulateRoute = true;
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                     .directionsRoute(super.locationMarker.currentRoute)
                     .shouldSimulateRoute(simulateRoute)
                     .build();
 
-            NavigationRoute option = NavigationRoute.builder(this)
-                    .accessToken(Mapbox.getAccessToken())
-                    .origin(Point.fromLngLat(super.originLocation.getLongitude(),super.originLocation.getLatitude()))
-                    .destination(Point.fromLngLat(super.locationMarker.destinationCoord.getLongitude(),super.locationMarker.destinationCoord.getLatitude()))
-                    .voiceUnits(DirectionsCriteria.METRIC)
-                    .build();
             // Call this method with Context from within an Activity
             NavigationLauncher.startNavigation(this, options);
 
