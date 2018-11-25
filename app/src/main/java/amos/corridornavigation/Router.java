@@ -20,9 +20,9 @@ import timber.log.Timber;
 public class Router {
 
     private Marker destinationMarkerPosition;
-    private LatLng destinationCoord;
+    protected LatLng destinationCoord;
 
-    private DirectionsRoute currentRoute;
+    protected DirectionsRoute currentRoute;
     private NavigationMapRoute navigationMapRoute;
 
     public Router()
