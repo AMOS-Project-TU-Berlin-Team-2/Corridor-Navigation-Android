@@ -11,7 +11,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.models.BannerInstructions;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.directions.v5.models.LegStep;
+import com.mapbox.api.directions.v5.models.RouteLeg;
+import com.mapbox.api.directions.v5.models.StepManeuver;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
@@ -27,6 +31,7 @@ import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -173,6 +178,61 @@ public class MainActivity extends MapContext {
                     .directionsRoute(super.locationMarker.currentRoute)
                     .shouldSimulateRoute(simulateRoute)
                     .build();
+
+            //System.out.println("\n###########################\n"+options.directionsRoute().legs().get(0).steps().get(0).maneuver().instruction()+"\n############################\n");
+            //System.out.println("\n###########################\n"+options.directionsRoute().legs().get(0).steps().get(0).bannerInstructions().get(0).primary().toString()+"\n############################\n");
+
+            if (options.directionsRoute().legs().isEmpty()) {
+                throw new Exception("No route selected.");
+            }
+
+            // Prints some information for debugging purposes about the list properties. Can be removed as soon as this method is working
+            System.out.println("\n###########################\nLeg size: "+options.directionsRoute().legs().size()+"\n############################\n");
+            System.out.println("\n###########################\nSteps size: "+options.directionsRoute().legs().get(0).steps().size()+"\n############################\n");
+            System.out.println("\n###########################\nbannerInstructions size: "+options.directionsRoute().legs().get(0).steps().get(0).bannerInstructions().size()+"\n############################\n");
+
+            /**
+             * I assume that directionsRoute().legs() contains one entry for every separate route, as currently with only one calculated route, its size is 1.
+             * Thus, I added these two lists that contain these individual lists for future purposes
+             * However at the moment, this list will only contain one sublist each, so it is somewhat obsolete for now.
+             */
+            ArrayList<ArrayList<StepManeuver>> routeManeuvers = new ArrayList<>();
+            ArrayList<ArrayList<BannerInstructions>> routeBannerInstructions = new ArrayList<>();
+
+            // Helper lists created in each iteration
+            ArrayList<StepManeuver> maneuvers = new ArrayList<>();
+            ArrayList<BannerInstructions> bannerInstructions = new ArrayList<>();
+
+            // Iterate over j) the different available routes and i) over the steps of the route
+            for (int j = 0; j < options.directionsRoute().legs().size(); j++) {
+                for (int i=0; i < options.directionsRoute().legs().get(j).steps().size(); i++) {
+                    maneuvers.add(options.directionsRoute().legs().get(j).steps().get(i).maneuver());
+                    LegStep leg = options.directionsRoute().legs().get(j).steps().get(i);
+                    if (!leg.bannerInstructions().isEmpty()) {
+                        bannerInstructions.add(leg.bannerInstructions().get(0));
+                    }
+                    else {
+                        System.out.println("Found empty bannerInstruction on iteration "+i+": "+leg.bannerInstructions().toString());
+                    }
+                }
+                // Append to the list of lists and clear for next iteration
+                routeManeuvers.add(new ArrayList<>(maneuvers));
+                routeBannerInstructions.add(new ArrayList<>(bannerInstructions));
+                maneuvers.clear();
+                bannerInstructions.clear();
+            }
+
+            // For debugging purposes. Later on, we should simply return/use the values of the routeLists
+            System.out.println("\n#################################################\nRoute information:\nManeuvers:\n"+routeManeuvers.toString());
+            System.out.println("\n\nbannerInstructions:\n"+routeBannerInstructions.toString()+"\n#################################################\n");
+
+            /**
+             * How to work with StepManeuvers and BannerInstructions:
+             * StepManeuvers look like this: StepManeuver{rawLocation=[13.260295, 52.412312], bearingBefore=227.0, bearingAfter=310.0, instruction=Rechts abbiegen auf Ramsteinweg, type=turn, modifier=right, exit=null}
+             * Thus by using step.instruction(), one can retrieve the text what to do next
+             * BannerInstructions look like this: BannerInstructions{distanceAlongGeometry=73.6, primary=BannerText{text=Ramsteinweg, components=[BannerComponents{text=Ramsteinweg, type=text, abbreviation=null, abbreviationPriority=null, imageBaseUrl=null, directions=null, active=null}], type=turn, modifier=right, degrees=null, drivingSide=null}, secondary=null, sub=null}
+             * Thus by using bannerInstruction.primary().text(), one can retrieve the text that is usually placed below an arrow on the labels showing which turn to do next
+             */
 
             // Call this method with Context from within an Activity
             NavigationLauncher.startNavigation(this, options);
