@@ -76,5 +76,19 @@
         mapbox:layout_constraintVertical_bias="0.83"
         mapbox:srcCompat="@drawable/mapbox_compass_icon" />
 
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20px"
+        android:background="@color/mapbox_navigation_route_alternative_color"
+        android:enabled="true"
+        android:padding="5px"
+        android:text="Start navigation"
+        android:textColor="@color/mapboxWhite"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintStart_toStartOf="parent" />
+
 
 </android.support.constraint.ConstraintLayout>

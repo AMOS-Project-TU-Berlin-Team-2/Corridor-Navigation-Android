@@ -22,7 +22,7 @@ public class Router {
     private Marker destinationMarkerPosition;
     private LatLng destinationCoord;
 
-    private DirectionsRoute currentRoute;
+    public DirectionsRoute currentRoute;
     private NavigationMapRoute navigationMapRoute;
 
     public Router()
@@ -57,7 +57,7 @@ public class Router {
         }
     }
 
-    private void getRoute(MapContext context, Point origin, Point destination) {
+    public void getRoute(MapContext context, Point origin, Point destination) {
         NavigationRoute.builder(context)
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)

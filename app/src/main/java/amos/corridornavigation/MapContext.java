@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
 
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
@@ -19,6 +21,8 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 
 import java.util.List;
 
@@ -26,6 +30,8 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
 
     protected MapView mapView;
+
+    private Button startButton;
 
     protected MapboxMap mapboxMap;
 
@@ -42,8 +48,24 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         locationMarker = new Router();
 
         mapView = findViewById(R.id.mapView);
+        startButton = findViewById(R.id.startButton);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        startButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .directionsRoute(locationMarker.currentRoute)
+                        .shouldSimulateRoute(true)
+                        .build();
+
+                NavigationLauncher.startNavigation(MapContext.this, options);
+
+            }
+
+
+        });
 
     }
 
@@ -60,6 +82,8 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     @Override
     public void onMapClick(@NonNull LatLng point){
         locationMarker.setDestinationMarkerPosition(this, point);
+        startButton.setEnabled(true);
+        startButton.setBackgroundResource(R.color.mapboxBlue);
     }
 
     @SuppressWarnings( {"MissingPermission"})
