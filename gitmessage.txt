@@ -1,0 +1,10 @@
+Subject line - Start with [First Name's First Letter and Last Name's Two First Letters] 
+
+Multi-line description of commit,
+feel free to be detailed.
+#
+#Example of a git commit
+# [VMO] My first git commit's title
+# 
+# Hello there. I really like you, and this is crazy.
+#
