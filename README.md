@@ -2,7 +2,7 @@
 
 A car navigation system built by students of the Technische Universität Berlin. The goal of this project is to do real time alternative route calculations. This makes it possible to change your route immediately if something on your current route occurs.
 
-<img  src="https://i.imgur.com/0SGlvzp.jpg" width="300" />
+<img  src="https://i.imgur.com/rUeyFDg.jpg" width="300" />
 
 
 ## Installation
