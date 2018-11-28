@@ -2,6 +2,7 @@ package amos.corridornavigation;
 
 import android.widget.Toast;
 
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Point;
@@ -58,20 +59,24 @@ public class Router {
     }
 
     private void getRoute(MapContext context, Point origin, Point destination) {
-        NavigationRoute.builder(context)
-                .accessToken(Mapbox.getAccessToken())
+
+        MapboxDirections.Builder directionsBuilder = MapboxDirections.builder();
+
+        directionsBuilder
+                .baseUrl("http://51.68.139.245:3000/")
+                .profile("driving")
                 .origin(origin)
+                .accessToken(Mapbox.getAccessToken())
                 .destination(destination)
                 .build()
-                .getRoute(new Callback<DirectionsResponse>() {
+                .enqueueCall(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
-                        Timber.d("Response code: %s", response.code());
+                        System.out.println(response.code());
                         if (response.body() == null) {
                             Timber.e("No routes found, make sure you set the right user and access token.");
-                            return;
-                        } else if (response.body().routes().size() < 1) {
+                            return; } else if (response.body().routes().size() < 1) {
                             Timber.e("No routes found");
                             return;
                         }
