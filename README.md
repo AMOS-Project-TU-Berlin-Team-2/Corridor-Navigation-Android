@@ -13,7 +13,7 @@ New releases are built weekly on Thursday afternoon. Get the latest release as a
 ```
 git clone git@github.com:AMOS-Project-TU-Berlin-Team-2/Corridor-Navigation-Android.git
 ```
-And import project into Android Studio. Alle necessary libraries and modules will be installed automatically.
+And import project into Android Studio. All necessary libraries and modules will be installed automatically.
 
 ## Testing
 
