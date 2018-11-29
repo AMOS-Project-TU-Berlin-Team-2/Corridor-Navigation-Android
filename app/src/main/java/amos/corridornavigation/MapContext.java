@@ -35,7 +35,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
     protected Location originLocation;
 
-    private Router locationMarker;
+    protected Router locationMarker;
 
 
     protected void initMapView(Bundle savedInstanceState) {
