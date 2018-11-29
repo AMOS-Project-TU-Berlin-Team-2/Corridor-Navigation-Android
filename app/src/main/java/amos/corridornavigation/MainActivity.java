@@ -28,7 +28,6 @@ import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.core.exceptions.ServicesException;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
@@ -50,7 +49,8 @@ import timber.log.Timber;
 
 public class MainActivity extends MapContext {
     public static String[] countries;
-
+    public ArrayAdapter<String> adapter;
+    public AutoCompleteTextView autoCompleteTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +61,9 @@ public class MainActivity extends MapContext {
         initMapView(savedInstanceState);
 
         final AutoCompleteTextView addressSearchBar = findViewById(R.id.main_searchbar_input);
+
+        this.adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {""});
+        addressSearchBar.setAdapter(adapter);
 
         addressSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -90,15 +93,12 @@ public class MainActivity extends MapContext {
 
     public void onSearchStart(CharSequence s) {
         String addressPart = s.toString();
-        String[] dropdownSuggestions = getSuggestions(addressPart);
-        AutoCompleteTextView autoCompleteTextView = findViewById(R.id.main_searchbar_input);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dropdownSuggestions);
-        autoCompleteTextView.setAdapter(adapter);
+        getSuggestions(addressPart);
     }
 
-    // TOTO-make getSuggestion return list of suggested addresses, now it just returns
-    // hardcoded list of countries for demoing and testing.
-    private String[] getSuggestions(String addressPart) {
+    // TOTO-make getSuggestion return list of suggested addresses, now it jsut returns
+    // hardcoded lsitof countries for demoing and testing.
+    private String[] getSuggestions_fake(String addressPart) {
         return new String[]{"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua; Barbuda",
                 "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh",
                 "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia &amp; Herzegovina",
@@ -123,6 +123,46 @@ public class MainActivity extends MapContext {
                 "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga",
                 "Trinidad &amp; Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks &amp; Caicos", "Uganda", "Ukraine",
                 "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"};
+    }
+
+    private void getSuggestions(String addressPart) {
+        MapboxGeocoding client;
+        ArrayList<String> autocomplete_results = new ArrayList<>();
+        try {
+
+            client = MapboxGeocoding.builder()
+                    .accessToken(getString(R.string.access_token))
+                    .query(addressPart)
+                    .autocomplete(true)
+                    .build();
+
+            client.enqueueCall(new Callback<GeocodingResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+
+                    List<CarmenFeature> results = response.body().features();
+                    if(results.size() > 1)
+                    {
+                        for (CarmenFeature result : results) {
+                            autocomplete_results.add(result.placeName());
+                        }
+                        String[] stockArr = new String[autocomplete_results.size()];
+                        stockArr = autocomplete_results.toArray(stockArr);
+                        adapter.clear();
+                        adapter.addAll(stockArr);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+                    Timber.e("Geocoding Failure: " + throwable.getMessage());
+                }
+            });
+
+        } catch (ServicesException servicesException) {
+            Timber.e("Error geocoding: " + servicesException.toString());
+            servicesException.printStackTrace();
+        }
     }
 
     public void onSearchButtonClicked(View view) {
