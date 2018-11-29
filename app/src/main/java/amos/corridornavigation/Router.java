@@ -63,7 +63,7 @@ public class Router {
         MapboxDirections.Builder directionsBuilder = MapboxDirections.builder();
 
         directionsBuilder
-                .baseUrl("http://51.68.139.245:3000/")
+                .baseUrl("https://245.ip-51-68-139.eu/osrm/")
                 .profile("driving")
                 .origin(origin)
                 .accessToken(Mapbox.getAccessToken())
