@@ -3,6 +3,7 @@ package amos.corridornavigation;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -173,6 +174,11 @@ public class MainActivity extends MapContext {
                     .directionsRoute(super.locationMarker.currentRoute)
                     .shouldSimulateRoute(simulateRoute)
                     .build();
+
+            int max=options.directionsRoute().legs().get(0).steps().size();
+            for(int i = 0; i<max;i++) {
+                Log.d("instruction", options.directionsRoute().legs().get(0).steps().get(i).maneuver().instruction());
+            }
 
             // Call this method with Context from within an Activity
             NavigationLauncher.startNavigation(this, options);
