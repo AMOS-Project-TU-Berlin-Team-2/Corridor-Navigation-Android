@@ -1,5 +1,6 @@
 package amos.corridornavigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +36,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import amos.corridornavigation.navigationview.NavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -193,5 +195,7 @@ public class MainActivity extends MapContext {
             e.printStackTrace();
             Toast.makeText(this, "You may not have selected a route yet.", Toast.LENGTH_LONG).show();
         }
+        Intent intent = new Intent(this,NavigationActivity.class);
+        startActivity(intent);
     }
 }
