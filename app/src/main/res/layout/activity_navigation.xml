@@ -1,20 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".navigationview.NavigationActivity">
-
+    tools:context=".navigationview.NavigationActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="40.73581"
-        mapbox:mapbox_cameraTargetLng="-73.99155"
-        mapbox:mapbox_cameraZoom="11"
-        mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
+        android:layout_width="638dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        mapbox:mapbox_cameraTargetLat="52.520008"
+        mapbox:mapbox_cameraTargetLng="13.404954"
+        mapbox:mapbox_cameraZoom="12"
+        mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10">
+
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="-4dp">
+
+        <ImageView
+            android:id="@+id/bannerView"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/blackBackgroundLayout"
+            app:layout_constraintEnd_toStartOf="@+id/blackBackgroundLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            mapbox:srcCompat="@drawable/direction_end_of_road_left" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/blackBackgroundLayout"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="@+id/mapView">
+
+        <TextView
+            android:id="@+id/instructionView"
+            android:layout_width="292dp"
+            android:layout_height="54dp"
+            android:gravity="center"
+            android:text="Put Instruction Text Here"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="55dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
