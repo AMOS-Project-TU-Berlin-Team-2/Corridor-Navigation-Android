@@ -9,6 +9,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -193,5 +195,21 @@ public class MainActivity extends MapContext {
             e.printStackTrace();
             Toast.makeText(this, "You may not have selected a route yet.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void onHideButtonClicked(View view){
+
+        LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
+
+        if (search_navi_ui.getVisibility()== View.VISIBLE){
+            search_navi_ui.setVisibility(View.INVISIBLE);
+            view.setBackgroundResource(R.drawable.eye_icon);
+        }
+            else {
+                search_navi_ui.setVisibility(View.VISIBLE);
+                view.setBackgroundResource(R.drawable.closed_eye_icon);
+            }
+
+
     }
 }
