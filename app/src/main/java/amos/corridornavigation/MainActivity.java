@@ -176,7 +176,6 @@ public class MainActivity extends MapContext {
         try {
             boolean simulateRoute = true;
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                    .defaultMilestonesEnabled(false)
                     .directionsRoute(super.locationMarker.currentRoute.get(0))
                     .build();
 
