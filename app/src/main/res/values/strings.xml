@@ -4,6 +4,7 @@
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
     <string name="user_location_not_available">The user location is loading</string>
+    <string name="internet_not_available">There is no internet connection. Please turn on wi-fi or mobile network to use the app correctly.</string>
     <string name="search">Search</string>
     <string name="address">Address</string>
     <string name="startnavi">StartNavi</string>

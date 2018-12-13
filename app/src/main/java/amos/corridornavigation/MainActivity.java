@@ -1,6 +1,12 @@
 package amos.corridornavigation;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -72,6 +78,20 @@ public class MainActivity extends MapContext {
 
             }
         });
+        checkNetwork();
+    }
+    private void checkNetwork() {
+        if (isNetworkAvailable()) {
+            System.err.println("network ok");
+        } else {
+            Toast.makeText(this, R.string.internet_not_available, Toast.LENGTH_LONG).show();
+        }
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void actionButtonPressed(View view) {
@@ -120,6 +140,8 @@ public class MainActivity extends MapContext {
     }
 
     public void onSearchButtonClicked(View view) {
+
+        checkNetwork();
 
         InputMethodManager inputManager = (InputMethodManager)
                 getSystemService(this.INPUT_METHOD_SERVICE);
