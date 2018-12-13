@@ -50,7 +50,6 @@ import timber.log.Timber;
 public class MainActivity extends MapContext {
     public ArrayAdapter<String> adapter;
     public AutoCompleteTextView autoCompleteTextView;
-    private ArrayList<String> previous_autocomplete_results;
     private AutoCompleteTextView addressSearchBar;
 
     @Override
@@ -136,7 +135,6 @@ public class MainActivity extends MapContext {
                                 System.err.println(e.getStackTrace());
                             }
                         }
-//                        add_previous_results(autocomplete_results, addressPart);
                         String[] stockArr = new String[autocomplete_results.size()];
                         stockArr = autocomplete_results.toArray(stockArr);
                         adapter.clear();
@@ -157,15 +155,6 @@ public class MainActivity extends MapContext {
             Timber.e("Error geocoding: " + servicesException.toString());
             servicesException.printStackTrace();
         }
-    }
-
-    private void add_previous_results(ArrayList<String> autocomplete_results, String adressPart) {
-        for (String result : previous_autocomplete_results) {
-            if (result.toLowerCase().startsWith(adressPart.toLowerCase()) && autocomplete_results.size() <= 5 && !autocomplete_results.contains(result)) {
-                autocomplete_results.add(result);
-            }
-        }
-        System.err.println("Yay !");
     }
 
     public void onSearchButtonClicked(View view) {
