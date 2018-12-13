@@ -176,14 +176,14 @@ public class MainActivity extends MapContext {
         try {
             boolean simulateRoute = true;
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                    .directionsRoute(super.locationMarker.currentRoute)
-                    .shouldSimulateRoute(simulateRoute)
+                    .defaultMilestonesEnabled(false)
+                    .directionsRoute(super.locationMarker.currentRoute.get(0))
                     .build();
 
 
             int max=options.directionsRoute().legs().get(0).steps().size();
             for(int i = 0; i<max;i++) {
-                Log.d("instruction", options.directionsRoute().legs().get(0).steps().get(i).maneuver().instruction());
+//                Log.d("instruction", options.directionsRoute().legs().get(0).steps().get(i).maneuver().instruction());
             }
 
             // Call this method with Context from within an Activity

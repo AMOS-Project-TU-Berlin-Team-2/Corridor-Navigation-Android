@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#727E8D</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorSearchbar">#ffffff</color>
+    <color name="mapbox_navigation_route_alternative_color">#7ebcfb</color>
+    <color name="mapbox_navigation_route_alternative_congestion_red">#e9646d</color>
+    <color name="mapbox_navigation_route_alternative_congestion_yellow">#f3b773</color>
+
 </resources>

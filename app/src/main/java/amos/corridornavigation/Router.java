@@ -13,6 +13,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,7 +25,7 @@ public class Router {
     private Marker destinationMarkerPosition;
     protected LatLng destinationCoord;
 
-    protected DirectionsRoute currentRoute;
+    public List<DirectionsRoute> currentRoute;
     private NavigationMapRoute navigationMapRoute;
 
     public Router()
@@ -81,7 +83,7 @@ public class Router {
                             return;
                         }
 
-                        currentRoute = response.body().routes().get(0);
+                        currentRoute = response.body().routes();
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
@@ -89,7 +91,7 @@ public class Router {
                         } else {
                             int condition = 0;
                             if (condition == 0) {
-                                navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteGreen);
+                                navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRoute);
                             }
                             else if (condition == 1) {
                                 navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteYellow);
@@ -99,7 +101,7 @@ public class Router {
                             }
                             //navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRoute);
                         }
-                        navigationMapRoute.addRoute(currentRoute);
+                        navigationMapRoute.addRoutes(currentRoute);
                     }
 
                     @Override
