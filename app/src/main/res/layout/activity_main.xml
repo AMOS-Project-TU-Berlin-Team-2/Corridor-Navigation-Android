@@ -9,7 +9,7 @@
 
 
     <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/navigationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         mapbox:mapbox_cameraTargetLat="52.520008"
@@ -43,17 +43,31 @@
 
         <View
             android:layout_width="10dp"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/search_button"
             android:elevation="10dp"
             android:onClick="onSearchButtonClicked"
             android:padding="10dp"
             android:text="@string/search"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/navigationStartButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/search_button"
+            android:elevation="10dp"
+            android:onClick="onNavigationStartClicked"
+            android:padding="10dp"
+            android:text="NAVI"
             android:textColor="#ffffff" />
     </LinearLayout>
 

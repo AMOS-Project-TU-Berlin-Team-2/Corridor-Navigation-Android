@@ -1,5 +1,6 @@
 package amos.corridornavigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
@@ -19,9 +21,13 @@ import com.mapbox.mapboxsdk.Mapbox;
 
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -161,6 +167,41 @@ public class MainActivity extends MapContext
             Timber.e("Error geocoding: " + servicesException.toString());
             servicesException.printStackTrace();
         }
+
+    }
+
+    public void onNavigationStartClicked(View view) {
+
+        // Route fetched from NavigationRoute
+        ArrayList<DirectionsRoute> routes = new ArrayList<>();
+
+        //routes.add(super.locationMarker.getCurrentRoute()); // TODO: ITS BECAUSE DEBUG
+        routes.add(super.locationMarker.directionsRoutes.get(0));
+        routes.add(super.locationMarker.directionsRoutes.get(1));
+        routes.add(super.locationMarker.directionsRoutes.get(2));
+
+
+
+        //routes.add(super.locationMarker.directionsRoutes.get(0));
+        //routes.add(super.locationMarker.directionsRoutes.get(1));
+
+        /*boolean simulateRoute = true;
+
+        // Create a NavigationLauncherOptions object to package everything together
+        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                .directionsRoute(route)
+                .shouldSimulateRoute(simulateRoute)
+                .build();
+
+        // Call this method with Context from within an Activity
+        NavigationLauncher.startNavigation(this, options);*/
+
+        Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
+        intent.putExtra("DirectionsRoute_0",routes.get(0));
+        intent.putExtra("DirectionsRoute_1",routes.get(1));
+        intent.putExtra("DirectionsRoute_2",routes.get(2));
+        //intent.putExtra("DirectionsRoute_2",routes.get(2));
+        startActivity(intent);
 
     }
 }

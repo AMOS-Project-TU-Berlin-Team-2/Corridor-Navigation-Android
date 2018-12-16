@@ -31,5 +31,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".navigationview.CorridorNavigationActivity"></activity>
+
     </application>
 </manifest>

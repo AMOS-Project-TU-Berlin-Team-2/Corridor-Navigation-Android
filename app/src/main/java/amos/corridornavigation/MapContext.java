@@ -35,13 +35,13 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
     protected Location originLocation;
 
-    private Router locationMarker;
+    protected Router locationMarker;
 
 
     protected void initMapView(Bundle savedInstanceState) {
         locationMarker = new Router();
 
-        mapView = findViewById(R.id.mapView);
+        mapView = findViewById(R.id.navigationView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
@@ -59,6 +59,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
     @Override
     public void onMapClick(@NonNull LatLng point){
+
         locationMarker.setDestinationMarkerPosition(this, point);
     }
 

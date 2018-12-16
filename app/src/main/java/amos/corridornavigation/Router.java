@@ -12,6 +12,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,15 +21,27 @@ import timber.log.Timber;
 
 public class Router {
 
+    final static boolean DEBUG_MODE = true;
+
     private Marker destinationMarkerPosition;
     private LatLng destinationCoord;
 
     private DirectionsRoute currentRoute;
+
+    public ArrayList<DirectionsRoute> directionsRoutes = new ArrayList<>();  //TODO: Only for DEBUG
+
     private NavigationMapRoute navigationMapRoute;
 
     public Router()
     {
     }
+
+
+    public DirectionsRoute getCurrentRoute()
+    {
+        return currentRoute;
+    }
+
 
     public void setDestinationMarkerPosition(MapContext context, LatLng point)
     {
@@ -58,6 +72,7 @@ public class Router {
     }
 
     private void getRoute(MapContext context, Point origin, Point destination) {
+
         NavigationRoute.builder(context)
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
@@ -76,7 +91,13 @@ public class Router {
                             return;
                         }
 
-                        currentRoute = response.body().routes().get(0);
+                        if(DEBUG_MODE) {
+                            directionsRoutes.add(response.body().routes().get(0));
+                        }
+                        else
+                        {
+                            currentRoute = response.body().routes().get(0);
+                        }
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
@@ -94,7 +115,16 @@ public class Router {
                             }
                             //navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRoute);
                         }
-                        navigationMapRoute.addRoute(currentRoute);
+
+                        if(DEBUG_MODE) {
+                            navigationMapRoute.addRoute(directionsRoutes.get(directionsRoutes.size()-1));
+                        }
+                        else
+                        {
+                            navigationMapRoute.addRoute(currentRoute);
+                        }
+
+
                     }
 
                     @Override
