@@ -21,7 +21,7 @@ import timber.log.Timber;
 
 public class Router {
 
-    final static boolean DEBUG_MODE = true;
+    final static boolean DEBUG_MODE = false;
 
     private Marker destinationMarkerPosition;
     private LatLng destinationCoord;

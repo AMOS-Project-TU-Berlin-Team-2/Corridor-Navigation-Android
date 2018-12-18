@@ -172,36 +172,26 @@ public class MainActivity extends MapContext
 
     public void onNavigationStartClicked(View view) {
 
-        // Route fetched from NavigationRoute
+        // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
         ArrayList<DirectionsRoute> routes = new ArrayList<>();
+        // The first element of routes should be the Main route (aka. the fastest route)
+        DirectionsRoute mainRoute = super.locationMarker.getCurrentRoute();
+        if(mainRoute == null)
+        {
 
-        //routes.add(super.locationMarker.getCurrentRoute()); // TODO: ITS BECAUSE DEBUG
-        routes.add(super.locationMarker.directionsRoutes.get(0));
-        routes.add(super.locationMarker.directionsRoutes.get(1));
-        routes.add(super.locationMarker.directionsRoutes.get(2));
-
-
-
-        //routes.add(super.locationMarker.directionsRoutes.get(0));
-        //routes.add(super.locationMarker.directionsRoutes.get(1));
-
-        /*boolean simulateRoute = true;
-
-        // Create a NavigationLauncherOptions object to package everything together
-        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                .directionsRoute(route)
-                .shouldSimulateRoute(simulateRoute)
-                .build();
-
-        // Call this method with Context from within an Activity
-        NavigationLauncher.startNavigation(this, options);*/
+            Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        routes.add(super.locationMarker.getCurrentRoute());
 
         Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
-        intent.putExtra("DirectionsRoute_0",routes.get(0));
-        intent.putExtra("DirectionsRoute_1",routes.get(1));
-        intent.putExtra("DirectionsRoute_2",routes.get(2));
-        //intent.putExtra("DirectionsRoute_2",routes.get(2));
-        startActivity(intent);
 
+        // Adds the routes to the intent. So we can use these in #CorrdorNavigationActivity
+        for(int i = 0; i < routes.size(); i++)
+        {
+            intent.putExtra("DirectionsRoute_"+i,routes.get(i));
+        }
+
+        startActivity(intent);
     }
 }

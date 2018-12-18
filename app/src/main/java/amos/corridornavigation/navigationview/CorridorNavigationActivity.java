@@ -40,9 +40,14 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         mainDriectionRoute = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_0");
         //The MainDirectionRoute must be the first in the ArrayList
-        alternativeDirectionsRoutes.add((DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_0"));
-        alternativeDirectionsRoutes.add((DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_1"));
-        alternativeDirectionsRoutes.add((DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_2"));
+
+        DirectionsRoute route;
+        int c = 0;
+        while((route = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_"+c)) != null)
+        {
+            c++;
+            alternativeDirectionsRoutes.add(route);
+        }
 
         navigationView = findViewById(R.id.navigationView);
         navigationView.onCreate(savedInstanceState);
