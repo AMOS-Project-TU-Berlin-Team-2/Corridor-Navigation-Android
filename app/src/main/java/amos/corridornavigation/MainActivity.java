@@ -1,5 +1,6 @@
 package amos.corridornavigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +36,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -171,26 +173,28 @@ public class MainActivity extends MapContext {
 
     }
 
-    public void onNavigateButtonClicked(View view) {
+    public void onNavigationStartClicked(View view) {
 
-        try {
-            boolean simulateRoute = true;
-            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                    .directionsRoute(super.locationMarker.currentRoute.get(0))
-                    .build();
+        // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
+        ArrayList<DirectionsRoute> routes = new ArrayList<>();
+        // The first element of routes should be the Main route (aka. the fastest route)
+        DirectionsRoute mainRoute = super.locationMarker.getCurrentRoute();
+        if(mainRoute == null)
+        {
 
-
-            int max=options.directionsRoute().legs().get(0).steps().size();
-            for(int i = 0; i<max;i++) {
-//                Log.d("instruction", options.directionsRoute().legs().get(0).steps().get(i).maneuver().instruction());
-            }
-
-            // Call this method with Context from within an Activity
-            NavigationLauncher.startNavigation(this, options);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "You may not have selected a route yet.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
+            return;
         }
+        routes.add(super.locationMarker.getCurrentRoute());
+
+        Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
+
+        // Adds the routes to the intent. So we can use these in #CorrdorNavigationActivity
+        for(int i = 0; i < routes.size(); i++)
+        {
+            intent.putExtra("DirectionsRoute_"+i,routes.get(i));
+        }
+
+        startActivity(intent);
     }
 }
