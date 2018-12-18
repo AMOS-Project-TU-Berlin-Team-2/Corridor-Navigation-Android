@@ -4,7 +4,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +81,8 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     public void onMapClick(@NonNull LatLng point){
         makeGeocodeSearch(point);
         locationMarker.setDestinationMarkerPosition(this, point);
+        CardView cardView = (CardView)findViewById(R.id.card_view);
+        cardView.setVisibility(View.VISIBLE);
     }
 
     private void makeGeocodeSearch(LatLng latLng) {
