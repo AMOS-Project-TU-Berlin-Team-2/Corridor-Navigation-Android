@@ -60,8 +60,7 @@
             android:id="@+id/Navigate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            <!-- TODO: onClick rename? -->
-            android:onClick="onNavigationStartClicked"
+            android:onClick="onNavigationButtonClicked"
             android:text="@string/startnavi" />
     </LinearLayout>
 

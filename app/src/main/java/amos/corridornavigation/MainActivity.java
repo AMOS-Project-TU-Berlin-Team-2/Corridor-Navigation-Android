@@ -150,13 +150,14 @@ public class MainActivity extends MapContext {
                 public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
 
                     List<CarmenFeature> results = response.body().features();
-                    if (results.size() > 1) {
+                    if(results.size() > 1)
+                    {
 
                         LatLng latLng = new LatLng();
                         latLng.setLatitude(results.get(0).center().latitude());
                         latLng.setLongitude(results.get(0).center().longitude());
                         onMapClick(latLng);
-                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0)); // mapboxMap came from MapContext
+                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,13.0)); // mapboxMap came from MapContext
                     }
                 }
 
@@ -173,19 +174,24 @@ public class MainActivity extends MapContext {
 
     }
 
-    public void onNavigationStartClicked(View view) {
+    public void onNavigationButtonClicked(View view) {
+
+        // TODO: fix OSRM voice instructions Error
+        if(true) {
+            Toast.makeText(this, "UnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailable", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
         ArrayList<DirectionsRoute> routes = new ArrayList<>();
         // The first element of routes should be the Main route (aka. the fastest route)
-        DirectionsRoute mainRoute = super.locationMarker.getCurrentRoute();
-        if(mainRoute == null)
-        {
-
+        if(super.locationMarker.currentRoute == null || super.locationMarker.currentRoute.size() <= 0) {
             Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
             return;
         }
-        routes.add(super.locationMarker.getCurrentRoute());
+
+        DirectionsRoute mainRoute = super.locationMarker.currentRoute.get(0);
+        routes.add(mainRoute);
 
         Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
 
