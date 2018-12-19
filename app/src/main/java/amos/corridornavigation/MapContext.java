@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +57,8 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     protected Router locationMarker;
 
     private MapboxGeocoding client = null;
-    //private TextView addressResultView;
+    private LatLng destinationPoint;    // To be used for calculating the route when pressing the route button
+    private TextView textInCardView;    // To avoid complicated access to the text view within the card view
 
 
     protected void initMapView(Bundle savedInstanceState) {
@@ -64,7 +67,6 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        //addressResultView = findViewById(R.id.AddressResultView);
     }
 
 
@@ -79,10 +81,17 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
     @Override
     public void onMapClick(@NonNull LatLng point){
-        makeGeocodeSearch(point);
-        locationMarker.setDestinationMarkerPosition(this, point);
+        destinationPoint = point;
         CardView cardView = (CardView)findViewById(R.id.card_view);
         cardView.setVisibility(View.VISIBLE);
+        ViewGroup viewGroup = ((ViewGroup) cardView.getChildAt(0));
+        textInCardView = (TextView) viewGroup.getChildAt(2);
+        makeGeocodeSearch(point);
+        locationMarker.setDestinationMarkerPosition(this, destinationPoint, false);
+    }
+
+    public void onRouteButtonClicked() {
+        locationMarker.setDestinationMarkerPosition(this, destinationPoint, true);
     }
 
     private void makeGeocodeSearch(LatLng latLng) {
@@ -100,14 +109,10 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
                                        Response<GeocodingResponse> response) {
                     List<CarmenFeature> results = response.body().features();
                     if (results.size() > 0) {
-
                         // Get the first Feature from the successful geocoding response
                         CarmenFeature feature = results.get(0);
-                        //System.out.println(feature.toString());
-                        Log.d("Place Name", feature.placeName());
-                        //addressResultView.setText(feature.placeName());
-
                         animateCameraToNewPosition(latLng);
+                        textInCardView.setText(feature.placeName());
                     } else {
                         Toast.makeText(MapContext.this, "No results found.",
                                 Toast.LENGTH_SHORT).show();

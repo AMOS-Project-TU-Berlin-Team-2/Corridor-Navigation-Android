@@ -171,6 +171,10 @@ public class MainActivity extends MapContext {
 
     }
 
+    public void onRouteButtonClicked(View view) {
+        super.onRouteButtonClicked();
+    }
+
     public void onNavigateButtonClicked(View view) {
 
         try {
