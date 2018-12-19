@@ -22,6 +22,7 @@ import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.ui.v5.voice.SpeechPlayer;
 import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 
 import java.util.ArrayList;
@@ -118,9 +119,11 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     @Override
     public void onNavigationReady(boolean isRunning) {
 
+        MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(false).build();
 
         NavigationViewOptions options = NavigationViewOptions.builder()
                 .directionsRoute(mainDriectionRoute)
+                .navigationOptions(navigationOptions)
                 .shouldSimulateRoute(true)
                 .milestoneEventListener((routeProgress, instruction, milestone) -> {
 

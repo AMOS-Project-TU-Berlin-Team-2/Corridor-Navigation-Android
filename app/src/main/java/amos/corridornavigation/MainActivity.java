@@ -176,12 +176,6 @@ public class MainActivity extends MapContext {
 
     public void onNavigationButtonClicked(View view) {
 
-        // TODO: fix OSRM voice instructions Error
-        if(true) {
-            Toast.makeText(this, "UnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailableUnavailable", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
         ArrayList<DirectionsRoute> routes = new ArrayList<>();
         // The first element of routes should be the Main route (aka. the fastest route)
