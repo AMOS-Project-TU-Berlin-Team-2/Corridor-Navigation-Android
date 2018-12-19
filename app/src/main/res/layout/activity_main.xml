@@ -66,6 +66,7 @@
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="-14dp"
                 android:layout_marginBottom="0dp"
+                android:onClick="onRouteButtonClicked"
                 android:text="Show Route" />
 
             <TextView

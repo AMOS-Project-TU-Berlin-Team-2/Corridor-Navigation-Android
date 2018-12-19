@@ -33,7 +33,8 @@ public class Router {
     {
     }
 
-    public void setDestinationMarkerPosition(MapContext context, LatLng point)
+    // TODO: Perhaps we could add a separate function instead of using this boolean parameter
+    public void setDestinationMarkerPosition(MapContext context, LatLng point, Boolean calculateRoute)
     {
         if (this.destinationMarkerPosition != null) {
             context.mapboxMap.removeMarker(this.destinationMarkerPosition);
@@ -42,14 +43,14 @@ public class Router {
         this.destinationMarkerPosition = context.mapboxMap.addMarker(new MarkerOptions()
                 .position(destinationCoord)
         );
-        if(context.originLocation != null) {
-            Point destinationPosition = Point.fromLngLat(destinationCoord.getLongitude(), destinationCoord.getLatitude());
-            Point originPosition = Point.fromLngLat(context.originLocation.getLongitude(), context.originLocation.getLatitude());
-            getRoute(context, originPosition, destinationPosition);
-        }
-        else
-        {
-            Toast.makeText(context, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
+        if (calculateRoute) {
+            if (context.originLocation != null) {
+                Point destinationPosition = Point.fromLngLat(destinationCoord.getLongitude(), destinationCoord.getLatitude());
+                Point originPosition = Point.fromLngLat(context.originLocation.getLongitude(), context.originLocation.getLatitude());
+                getRoute(context, originPosition, destinationPosition);
+            } else {
+                Toast.makeText(context, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -57,7 +58,7 @@ public class Router {
     {
         if(destinationCoord != null)
         {
-            this.setDestinationMarkerPosition(context, destinationCoord);
+            this.setDestinationMarkerPosition(context, destinationCoord, true);
         }
     }
 
