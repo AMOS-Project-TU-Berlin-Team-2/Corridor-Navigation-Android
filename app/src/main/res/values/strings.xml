@@ -3,6 +3,8 @@
     <string name="access_token" translatable="false">pk.eyJ1Ijoic2ViYW1pbyIsImEiOiJjam81azRkYjIwMmV6M3BxcnJpYWYzMjlkIn0.33YK9Y2Cjz6RrPXtGTwCgA</string>
     <string name="search">Search</string>
     <string name="address">Address</string>
+    <string name="navi_pause">BackToMap</string>
+    <string name="navi_continue">BackToNavi</string>
     <string name="startnavi">StartNavi</string>
 
     <!-- TODO: Remove or change this placeholder text -->

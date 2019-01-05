@@ -55,8 +55,7 @@ public class MainActivity extends MapContext {
 
         initMapView(savedInstanceState);
 
-        final AutoCompleteTextView addressSearchBar = (AutoCompleteTextView)
-                findViewById(R.id.main_searchbar_input);
+        final AutoCompleteTextView addressSearchBar = findViewById(R.id.main_searchbar_input);
 
         addressSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -187,6 +186,10 @@ public class MainActivity extends MapContext {
         DirectionsRoute mainRoute = super.locationMarker.currentRoute.get(0);
         routes.add(mainRoute);
 
+        // Closes the Navigation Activity which has remained in the Background
+        Intent intentNavigation = new Intent("finish_activity");
+        sendBroadcast(intentNavigation);
+
         Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
 
         // Adds the routes to the intent. So we can use these in #CorrdorNavigationActivity
@@ -195,6 +198,12 @@ public class MainActivity extends MapContext {
             intent.putExtra("DirectionsRoute_"+i,routes.get(i));
         }
 
+        startActivity(intent);
+    }
+    public void onClickNaviGoOn(View view){
+        Intent intent=new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.setClassName(this,"amos.corridornavigation.navigationview.CorridorNavigationActivity");
         startActivity(intent);
     }
 }

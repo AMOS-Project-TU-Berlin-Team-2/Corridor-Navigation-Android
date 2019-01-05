@@ -1,33 +1,23 @@
 package amos.corridornavigation.navigationview;
 
-import android.content.SharedPreferences;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View;
 
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
+
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
-import com.mapbox.services.android.navigation.ui.v5.map.NavigationMapboxMap;
-import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
-import com.mapbox.services.android.navigation.ui.v5.voice.SpeechPlayer;
-import com.mapbox.services.android.navigation.v5.milestone.Milestone;
-import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
-import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
-import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import java.util.ArrayList;
 
-import amos.corridornavigation.MapContext;
 import amos.corridornavigation.R;
 
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
@@ -41,7 +31,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation);
+        setContentView(R.layout.activity_corridor_navigation);
 
         mainDriectionRoute = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_0");
         //The MainDirectionRoute must be the first in the ArrayList
@@ -53,6 +43,8 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
             c++;
             alternativeDirectionsRoutes.add(route);
         }
+        // Receiver needs to be registered to be able to receive massage later from main Activity
+        registerReceiver(broadcastReceiver, new IntentFilter("finish_activity"));
 
         navigationView = findViewById(R.id.navigationView);
         navigationView.onCreate(savedInstanceState);
@@ -150,4 +142,21 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         //red_router.addRoute(alternativeDirectionsRoutes.get(2));
 
     }
+    public void onClickNaviPause(View view){
+        Intent intent=new Intent();//CorridorNavigationActivity.this, amos.corridornavigation.MainActivity.class);
+        intent.setClassName(this,"amos.corridornavigation.MainActivity");
+        intent.putExtra("naviIsPaused",true);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context arg0, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals("finish_activity")) {
+                finish();
+            }
+        }
+    };
 }
