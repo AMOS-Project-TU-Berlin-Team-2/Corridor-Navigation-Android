@@ -1,10 +1,12 @@
 package amos.corridornavigation;
 
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.text.Editable;
@@ -41,6 +43,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,8 +62,7 @@ public class MainActivity extends MapContext {
 
         initMapView(savedInstanceState);
 
-        final AutoCompleteTextView addressSearchBar = (AutoCompleteTextView)
-                findViewById(R.id.main_searchbar_input);
+        final AutoCompleteTextView addressSearchBar = findViewById(R.id.main_searchbar_input);
 
         addressSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -170,13 +172,14 @@ public class MainActivity extends MapContext {
                 public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
 
                     List<CarmenFeature> results = response.body().features();
-                    if (results.size() > 1) {
+                    if(results.size() > 1)
+                    {
 
                         LatLng latLng = new LatLng();
                         latLng.setLatitude(results.get(0).center().latitude());
                         latLng.setLongitude(results.get(0).center().longitude());
                         onMapClick(latLng);
-                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13.0)); // mapboxMap came from MapContext
+                        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,13.0)); // mapboxMap came from MapContext
                     }
                 }
 
@@ -193,27 +196,37 @@ public class MainActivity extends MapContext {
 
     }
 
-    public void onNavigateButtonClicked(View view) {
+    public void onNavigationButtonClicked(View view) {
 
-        try {
-            boolean simulateRoute = true;
-            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                    .directionsRoute(super.locationMarker.currentRoute)
-                    .shouldSimulateRoute(simulateRoute)
-                    .build();
-
-
-            int max=options.directionsRoute().legs().get(0).steps().size();
-            for(int i = 0; i<max;i++) {
-                Log.d("instruction", options.directionsRoute().legs().get(0).steps().get(i).maneuver().instruction());
-            }
-
-            // Call this method with Context from within an Activity
-            NavigationLauncher.startNavigation(this, options);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "You may not have selected a route yet.", Toast.LENGTH_LONG).show();
+        // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
+        ArrayList<DirectionsRoute> routes = new ArrayList<>();
+        // The first element of routes should be the Main route (aka. the fastest route)
+        if(super.locationMarker.currentRoute == null || super.locationMarker.currentRoute.size() <= 0) {
+            Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        DirectionsRoute mainRoute = super.locationMarker.currentRoute.get(0);
+        routes.add(mainRoute);
+
+        // Closes the Navigation Activity which has remained in the Background
+        Intent intentNavigation = new Intent("finish_activity");
+        sendBroadcast(intentNavigation);
+
+        Intent intent = new Intent(MainActivity.this, CorridorNavigationActivity.class);
+
+        // Adds the routes to the intent. So we can use these in #CorrdorNavigationActivity
+        for(int i = 0; i < routes.size(); i++)
+        {
+            intent.putExtra("DirectionsRoute_"+i,routes.get(i));
+        }
+
+        startActivity(intent);
+    }
+    public void onClickNaviGoOn(View view){
+        Intent intent=new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.setClassName(this,"amos.corridornavigation.navigationview.CorridorNavigationActivity");
+        startActivity(intent);
     }
 }

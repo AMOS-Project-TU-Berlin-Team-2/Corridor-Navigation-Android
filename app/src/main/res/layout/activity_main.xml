@@ -9,7 +9,7 @@
 
 
     <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/navigationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         mapbox:mapbox_cameraTargetLat="52.520008"
@@ -60,9 +60,25 @@
             android:id="@+id/Navigate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onNavigateButtonClicked"
+            android:onClick="onNavigationButtonClicked"
             android:text="@string/startnavi" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:onClick="onClickNaviGoOn"
+        android:text="@string/navi_continue"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="1.0"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent"
+        mapbox:layout_constraintVertical_bias="1.0" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton2"

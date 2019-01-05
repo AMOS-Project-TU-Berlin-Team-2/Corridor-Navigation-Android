@@ -8,7 +8,70 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="NavigationMapRouteGreen">
+
+
+    <style name="CustomNavigationMapRoute" parent="@style/NavigationMapRoute">
+
+        <!-- Main color for the route line -->
+        <item name="routeColor">#000</item>
+        <!-- Outline color for the route line -->
+        <item name="routeShieldColor">#2C5F99</item>
+
+        <!-- Color for moderate traffic along the route line -->
+        <item name="routeModerateCongestionColor">#FFAB65</item>
+        <!-- Color for severe traffic along the route line -->
+        <item name="routeSevereCongestionColor">#E85552</item>
+
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+    </style>
+
+    <style name="CustomNavigationViewLight" parent="@style/NavigationViewLight">
+        <!-- The main turn banner view at the top of the screen -->
+
+        <!-- Background color of the banner -->
+        <item name="navigationViewBannerBackground">#FFFFFF</item>
+        <!-- Color for the primary label that displays the turn name -->
+        <item name="navigationViewBannerPrimaryText">#37516F</item>
+        <!-- Color for the secondary label that occasionally appears underneath the primary label -->
+        <item name="navigationViewBannerSecondaryText">#E637516F</item>
+        <!-- Primary color for the turn arrow icons-->
+        <item name="navigationViewBannerManeuverPrimary">#37516F</item>
+        <!-- Secondary color for the turn arrow icons (e.g. the line segment that forks off) -->
+        <item name="navigationViewBannerManeuverSecondary">#4D37516F</item>
+
+        <!-- Alternate background color for the dropdown list of upcoming steps -->
+        <item name="navigationViewListBackground">#FAFAFA</item>
+
+
+        <!-- The summary view along the bottom of the screen -->
+
+        <!-- Background color of the summary view -->
+        <item name="navigationViewPrimary">#FFFFFF</item>
+        <!-- Tint color for icons in the summary view -->
+        <item name="navigationViewSecondary">#28353D</item>
+        <!-- Accent color for elements such as the recenter button -->
+        <item name="navigationViewAccent">#4882C6</item>
+        <!-- Color for the main duration label in the summary view -->
+        <item name="navigationViewPrimaryText">#424242</item>
+        <!-- Color for the secondary distance and ETA label in the summary view -->
+        <item name="navigationViewSecondaryText">#424242</item>
+
+
+        <!-- Custom colors for progress bars displayed during navigation -->
+        <item name="navigationViewProgress">#4B75A4</item>
+        <item name="navigationViewProgressBackground">#39587B</item>
+
+        <!-- Custom colors for the route line and traffic -->
+        <item name="navigationViewRouteStyle">@style/CustomNavigationMapRoute</item>
+
+        <!-- Map style -->
+        <item name="navigationViewMapStyle">mapbox://styles/mapbox/navigation-guidance-day-v2</item>
+    </style>
+
+
+
+    <style name="NavigationMapRouteGreen" parent="@style/NavigationMapRoute">
         <!-- Colors -->
         <item name="routeColor">#00FF00</item>
         <!--<item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item> // don't know about traffic colors, maybe they can be removed for now

@@ -30,12 +30,12 @@ public class MainActivityTest {
 
     @Test
     public void testLaunch() {
-        View mapView = mActivity.findViewById(R.id.mapView);
+        View mapView = mActivity.findViewById(R.id.navigationView);
         View actionButton = mActivity.findViewById(R.id.floatingActionButton2);
         assertNotNull(mapView);
         assertNotNull(actionButton);
         onView(withId(R.id.floatingActionButton2)).perform(click());
-        onView(withId(R.id.mapView)).perform(swipeDown(), swipeLeft(), swipeRight(), swipeUp());
+        onView(withId(R.id.navigationView)).perform(swipeDown(), swipeLeft(), swipeRight(), swipeUp());
     }
 
     @After

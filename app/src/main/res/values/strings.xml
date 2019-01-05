@@ -1,11 +1,26 @@
 <resources>
     <string name="application_name">Corridor Navigation</string>
     <string name="access_token" translatable="false">pk.eyJ1Ijoic2ViYW1pbyIsImEiOiJjam81azRkYjIwMmV6M3BxcnJpYWYzMjlkIn0.33YK9Y2Cjz6RrPXtGTwCgA</string>
+
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
     <string name="user_location_not_available">The user location is loading</string>
     <string name="internet_not_available">There is no internet connection. Please turn on wi-fi or mobile network to use the app correctly.</string>
+
     <string name="search">Search</string>
     <string name="address">Address</string>
+    <string name="navi_pause">BackToMap</string>
+    <string name="navi_continue">BackToNavi</string>
     <string name="startnavi">StartNavi</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Messages -->
+    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
+
+    <!-- Error Messsages -->
+    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+    <string name="user_location_not_available">The user location is loading</string>
+    <string name="user_no_route_selected">You didn\'t choose a route</string>
 </resources>
