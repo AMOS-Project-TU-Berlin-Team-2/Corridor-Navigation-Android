@@ -10,6 +10,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -205,5 +208,20 @@ public class MainActivity extends MapContext {
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.setClassName(this,"amos.corridornavigation.navigationview.CorridorNavigationActivity");
         startActivity(intent);
+    }
+
+    public void onHideButtonClicked(View view){
+
+        LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
+        ImageButton hideButton = (ImageButton)view;
+
+        if (search_navi_ui.getVisibility()== View.VISIBLE){
+            search_navi_ui.setVisibility(View.INVISIBLE);
+            hideButton.setImageResource(R.drawable.eye_icon);
+        }
+            else {
+                search_navi_ui.setVisibility(View.VISIBLE);
+            hideButton.setImageResource(R.drawable.closed_eye_icon);
+            }
     }
 }
