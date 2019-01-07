@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -212,16 +213,19 @@ public class MainActivity extends MapContext {
 
     public void onHideButtonClicked(View view){
 
-        LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
+        LinearLayout search_navi_ui = findViewById(R.id.search_navi_ui);
+        Button naviButton =  findViewById(R.id.button);
         ImageButton hideButton = (ImageButton)view;
 
         if (search_navi_ui.getVisibility()== View.VISIBLE){
             search_navi_ui.setVisibility(View.INVISIBLE);
+            naviButton.setVisibility(View.INVISIBLE);
             hideButton.setImageResource(R.drawable.eye_icon);
         }
-            else {
-                search_navi_ui.setVisibility(View.VISIBLE);
+        else {
+            search_navi_ui.setVisibility(View.VISIBLE);
+            naviButton.setVisibility(View.VISIBLE);
             hideButton.setImageResource(R.drawable.closed_eye_icon);
-            }
+        }
     }
 }
