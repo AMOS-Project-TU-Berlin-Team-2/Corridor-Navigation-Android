@@ -3,7 +3,12 @@ package amos.corridornavigation;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.mapbox.android.core.location.LocationEngine;
@@ -21,8 +26,9 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
 import java.util.List;
+import java.util.Locale;
 
-public class MapContext extends AppCompatActivity implements LocationEngineListener, PermissionsListener, OnMapReadyCallback, MapboxMap.OnMapClickListener {
+public class MapContext extends AppCompatActivity implements LocationEngineListener, PermissionsListener, OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener{
 
 
     protected MapView mapView;
@@ -62,6 +68,26 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
         locationMarker.setDestinationMarkerPosition(this, point);
     }
+
+    @Override
+    public void onMapLongClick(@NonNull LatLng point){
+
+        LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
+        FloatingActionButton hideButton = findViewById(R.id.hide_button);
+        FloatingActionButton compassButton = findViewById(R.id.floatingActionButton2);
+
+        if (search_navi_ui.getVisibility()== View.VISIBLE){
+            search_navi_ui.setVisibility(View.INVISIBLE);
+            hideButton.hide();
+            compassButton.hide();
+        }
+        else {
+            search_navi_ui.setVisibility(View.VISIBLE);
+            hideButton.show();
+            compassButton.show();
+        }
+    }
+
 
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationPlugin() {
@@ -129,6 +155,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     public void onMapReady(MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
         mapboxMap.addOnMapClickListener(this);
+        mapboxMap.addOnMapLongClickListener(this);
         enableLocationPlugin();
     }
 
