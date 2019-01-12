@@ -153,8 +153,7 @@ public class MainActivity extends MapContext {
                 public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
 
                     List<CarmenFeature> results = response.body().features();
-                    if(results.size() > 1)
-                    {
+                    if (results.size() > 1) {
 
                         LatLng latLng = new LatLng();
                         latLng.setLatitude(results.get(0).center().latitude());
@@ -177,12 +176,17 @@ public class MainActivity extends MapContext {
 
     }
 
-    public void onNavigationButtonClicked(View view) {
+    public void onRouteButtonClicked(View view) {
+        super.onRouteButtonClicked();
+    }
+
+
+    public void onNavigateButtonClicked(View view) {
 
         // ArrayList which contains all the routes that should be drawn when the CorridorNavigationActivity starts
         ArrayList<DirectionsRoute> routes = new ArrayList<>();
         // The first element of routes should be the Main route (aka. the fastest route)
-        if(super.locationMarker.currentRoute == null || super.locationMarker.currentRoute.size() <= 0) {
+        if (super.locationMarker.currentRoute == null || super.locationMarker.currentRoute.size() <= 0) {
             Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -204,6 +208,7 @@ public class MainActivity extends MapContext {
 
         startActivity(intent);
     }
+
     public void onClickNaviGoOn(View view){
         Intent intent=new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
