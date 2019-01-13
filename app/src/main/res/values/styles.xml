@@ -73,7 +73,8 @@
 
     <style name="NavigationMapRouteGreen" parent="@style/NavigationMapRoute">
         <!-- Colors -->
-        <item name="routeColor">#00FF00</item>
+        <item name="routeColor">#6fbc6f</item>
+        <item name="routeShieldColor">#3b833b</item>
         <!--<item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item> // don't know about traffic colors, maybe they can be removed for now
         <item name="routeSevereCongestionColor">@color/mapbox_navigation_route_layer_congestion_red</item>
         <item name="routeShieldColor">@color/mapbox_navigation_route_shield_layer_color</item>-->
