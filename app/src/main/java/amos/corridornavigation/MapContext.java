@@ -42,6 +42,7 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import java.util.List;
 import java.util.Locale;
 
+import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -153,14 +154,18 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
         FloatingActionButton hideButton = findViewById(R.id.hide_button);
         FloatingActionButton compassButton = findViewById(R.id.floatingActionButton2);
+        Button naviButton =  findViewById(R.id.button);
 
         if (search_navi_ui.getVisibility()== View.VISIBLE){
             search_navi_ui.setVisibility(View.INVISIBLE);
+            naviButton.setVisibility(View.INVISIBLE);
             hideButton.hide();
             compassButton.hide();
         }
         else {
             search_navi_ui.setVisibility(View.VISIBLE);
+            if(CorridorNavigationActivity.backgroundInstance == true)
+                naviButton.setVisibility(View.VISIBLE);
             hideButton.show();
             compassButton.show();
         }
@@ -256,6 +261,12 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        Button naviButton =  findViewById(R.id.button);
+        if(CorridorNavigationActivity.backgroundInstance == true){
+            naviButton.setVisibility(View.VISIBLE);
+        }else{
+            naviButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

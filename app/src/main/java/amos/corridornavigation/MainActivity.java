@@ -56,7 +56,8 @@ public class MainActivity extends MapContext {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.access_token));
         setContentView(R.layout.activity_main);
-
+        Button naviButton =  findViewById(R.id.button);
+        naviButton.setVisibility(View.INVISIBLE);
         initMapView(savedInstanceState);
 
         final AutoCompleteTextView addressSearchBar = findViewById(R.id.main_searchbar_input);
@@ -209,7 +210,7 @@ public class MainActivity extends MapContext {
         startActivity(intent);
     }
 
-    public void onClickNaviGoOn(View view){
+    public void onBackToNaviClicked(View view){
         Intent intent=new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.setClassName(this,"amos.corridornavigation.navigationview.CorridorNavigationActivity");
@@ -229,7 +230,10 @@ public class MainActivity extends MapContext {
         }
         else {
             search_navi_ui.setVisibility(View.VISIBLE);
-            naviButton.setVisibility(View.VISIBLE);
+            // only if there is running in background a navigation activity it is possible to go
+            // back to it, so the button is set to visible
+            if(CorridorNavigationActivity.backgroundInstance == true)
+                naviButton.setVisibility(View.VISIBLE);
             hideButton.setImageResource(R.drawable.closed_eye_icon);
         }
     }

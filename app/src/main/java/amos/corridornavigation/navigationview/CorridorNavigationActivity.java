@@ -23,6 +23,7 @@ import amos.corridornavigation.R;
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
 
     NavigationView navigationView;
+    public static boolean backgroundInstance = false;
 
     DirectionsRoute mainDriectionRoute;
     ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
@@ -62,6 +63,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onResume() {
         super.onResume();
         navigationView.onResume();
+        backgroundInstance = false;
     }
 
     @Override
@@ -148,6 +150,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         intent.putExtra("naviIsPaused",true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
+        backgroundInstance = true;
     }
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
