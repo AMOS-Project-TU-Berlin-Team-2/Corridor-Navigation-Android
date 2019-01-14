@@ -56,7 +56,7 @@ public class MainActivity extends MapContext {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.access_token));
         setContentView(R.layout.activity_main);
-        Button naviButton =  findViewById(R.id.button);
+        ImageButton naviButton =  findViewById(R.id.button);
         naviButton.setVisibility(View.INVISIBLE);
         initMapView(savedInstanceState);
 
@@ -220,7 +220,7 @@ public class MainActivity extends MapContext {
     public void onHideButtonClicked(View view){
 
         LinearLayout search_navi_ui = findViewById(R.id.search_navi_ui);
-        Button naviButton =  findViewById(R.id.button);
+        ImageButton naviButton =  findViewById(R.id.button);
         ImageButton hideButton = (ImageButton)view;
 
         if (search_navi_ui.getVisibility()== View.VISIBLE){
