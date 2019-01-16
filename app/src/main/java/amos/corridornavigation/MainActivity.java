@@ -28,7 +28,6 @@ import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.core.exceptions.ServicesException;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
@@ -49,7 +48,9 @@ import timber.log.Timber;
 // classes needed to add location layer
 
 public class MainActivity extends MapContext {
-    public static String[] countries;
+    public ArrayAdapter<String> adapter;
+    public AutoCompleteTextView autoCompleteTextView;
+    private AutoCompleteTextView addressSearchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,12 @@ public class MainActivity extends MapContext {
         naviButton.setVisibility(View.INVISIBLE);
         initMapView(savedInstanceState);
 
-        final AutoCompleteTextView addressSearchBar = findViewById(R.id.main_searchbar_input);
+        addressSearchBar = (AutoCompleteTextView)
+                findViewById(R.id.main_searchbar_input);
+
+        this.adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {""});
+        this.adapter.setNotifyOnChange(true);
+        addressSearchBar.setAdapter(adapter);
 
         addressSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -70,12 +76,14 @@ public class MainActivity extends MapContext {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onSearchStart(s);
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (s.length() > 0) {
+                    onSearchStart(s);
+                }
             }
         });
     }
@@ -90,39 +98,63 @@ public class MainActivity extends MapContext {
 
     public void onSearchStart(CharSequence s) {
         String addressPart = s.toString();
-        String[] dropdownSuggestions = getSuggestions(addressPart);
-        AutoCompleteTextView autoCompleteTextView = findViewById(R.id.main_searchbar_input);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dropdownSuggestions);
-        autoCompleteTextView.setAdapter(adapter);
+        getSuggestions(addressPart);
     }
 
-    // TOTO-make getSuggestion return list of suggested addresses, now it just returns
-    // hardcoded list of countries for demoing and testing.
-    private String[] getSuggestions(String addressPart) {
-        return new String[]{"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua; Barbuda",
-                "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh",
-                "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia &amp; Herzegovina",
-                "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
-                "Cameroon", "Cape Verde", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands",
-                "Costa Rica", "Cote D Ivoire", "Croatia", "Cruise Ship", "Cuba", "Cyprus", "Czech Republic", "Denmark",
-                "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea",
-                "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia",
-                "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland",
-                "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras",
-                "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel",
-                "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyz Republic", "Laos",
-                "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau",
-                "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius",
-                "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Namibia",
-                "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger",
-                "Nigeria", "Norway", "Oman", "Pakistan", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
-                "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda",
-                "Saint Pierre &amp; Miquelon", "Samoa", "San Marino", "Satellite", "Saudi Arabia", "Senegal", "Serbia",
-                "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "South Africa", "South Korea", "Spain",
-                "Sri Lanka", "St Kitts &amp; Nevis", "St Lucia", "St Vincent", "St. Lucia", "Sudan", "Suriname", "Swaziland",
-                "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga",
-                "Trinidad &amp; Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks &amp; Caicos", "Uganda", "Ukraine",
-                "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"};
+    private void getSuggestions(String addressPart) {
+        MapboxGeocoding client;
+        ArrayList<String> autocomplete_results = new ArrayList<>();
+        try {
+
+            if (super.originLocation != null) {
+                client = MapboxGeocoding.builder()
+                        .accessToken(getString(R.string.access_token))
+                        .proximity(Point.fromLngLat(super.originLocation.getLongitude(), super.originLocation.getLatitude()))
+                        .query(addressPart)
+                        .autocomplete(true)
+                        .build();
+            } else {
+                client = MapboxGeocoding.builder()
+                        .accessToken(getString(R.string.access_token))
+                        .query(addressPart)
+                        .autocomplete(true)
+                        .build();
+            }
+
+            client.enqueueCall(new Callback<GeocodingResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+
+                    List<CarmenFeature> results = response.body().features();
+                    if(results.size() > 1)
+                    {
+                        for (CarmenFeature result : results) {
+                            try {
+                                autocomplete_results.add(result.placeName()); //.substring(0, result.placeName().indexOf(","))
+                            } catch (Exception e) {
+                                System.err.println(e.getStackTrace());
+                            }
+                        }
+                        String[] stockArr = new String[autocomplete_results.size()];
+                        stockArr = autocomplete_results.toArray(stockArr);
+                        adapter.clear();
+                        adapter.addAll(stockArr);
+                        adapter.notifyDataSetChanged();
+                        addressSearchBar.setAdapter(adapter);
+                        addressSearchBar.showDropDown();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+                    Timber.e("Geocoding Failure: " + throwable.getMessage());
+                }
+            });
+
+        } catch (ServicesException servicesException) {
+            Timber.e("Error geocoding: " + servicesException.toString());
+            servicesException.printStackTrace();
+        }
     }
 
     public void onSearchButtonClicked(View view) {

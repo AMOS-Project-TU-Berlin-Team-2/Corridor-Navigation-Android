@@ -61,7 +61,6 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     private LocationComponent locationComponent;
 
     protected Location originLocation;
-
     protected Router locationMarker;
 
     private MapboxGeocoding client = null;
