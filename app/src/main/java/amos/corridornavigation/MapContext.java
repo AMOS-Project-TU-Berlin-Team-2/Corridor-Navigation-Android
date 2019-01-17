@@ -111,7 +111,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
                 .include(originLatLng) // Northeast
                 .include(destinationPoint) // Southwest
                 .build();
-        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,200));
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,100,350,100,500));
     }
 
     private void makeGeocodeSearch(LatLng latLng) {
