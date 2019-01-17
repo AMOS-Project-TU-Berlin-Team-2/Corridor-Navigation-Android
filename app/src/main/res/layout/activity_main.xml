@@ -44,6 +44,8 @@
             <Button
                 android:id="@+id/Navigate"
                 android:layout_width="175dp"
+                android:textColor="#ffffff"
+                android:background="@drawable/search_button"
                 android:layout_height="55dp"
                 android:layout_below="@+id/info_text"
                 android:layout_alignRight="@+id/info_text"
@@ -58,6 +60,8 @@
             <Button
                 android:id="@+id/Route"
                 android:layout_width="175dp"
+                android:textColor="#ffffff"
+                android:background="@drawable/search_button"
                 android:layout_height="55dp"
                 android:layout_below="@+id/info_text"
                 android:layout_alignLeft="@+id/info_text"
