@@ -27,6 +27,8 @@ import com.mapbox.core.exceptions.ServicesException;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
+import com.mapbox.mapboxsdk.geometry.LatLngSpan;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -101,6 +103,14 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
 
     public void onRouteButtonClicked() {
         locationMarker.setDestinationMarkerPosition(this, destinationPoint, true);
+        LatLng originLatLng = new LatLng();
+        originLatLng.setLatitude(originLocation.getLatitude());
+        originLatLng.setLongitude(originLocation.getLongitude());
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(originLatLng) // Northeast
+                .include(destinationPoint) // Southwest
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,200));
     }
 
     private void makeGeocodeSearch(LatLng latLng) {
