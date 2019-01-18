@@ -223,9 +223,9 @@ public class MainActivity extends MapContext {
             Toast.makeText(this, R.string.user_no_route_selected, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        DirectionsRoute mainRoute = super.locationMarker.currentRoute.get(0);
-        routes.add(mainRoute);
+        for(int i = 0 ; i < super.locationMarker.currentRoute.size();i++){
+            routes.add(super.locationMarker.currentRoute.get(i));
+        }
 
         // Closes the Navigation Activity which has remained in the Background
         Intent intentNavigation = new Intent("finish_activity");
