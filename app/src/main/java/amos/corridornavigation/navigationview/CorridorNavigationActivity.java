@@ -113,12 +113,13 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     @Override
     public void onNavigationReady(boolean isRunning) {
 
-        MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(false).build();
+        MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(true).build();
 
         NavigationViewOptions options = NavigationViewOptions.builder()
                 .directionsRoute(mainDriectionRoute)
                 .navigationOptions(navigationOptions)
                 .shouldSimulateRoute(true)
+
                 .milestoneEventListener((routeProgress, instruction, milestone) -> {
 
                 })

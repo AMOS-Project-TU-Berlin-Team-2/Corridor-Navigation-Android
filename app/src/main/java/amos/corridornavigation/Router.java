@@ -66,14 +66,14 @@ public class Router {
 
         MapboxDirections.Builder directionsBuilder = MapboxDirections.builder();
 
-        directionsBuilder
+        NavigationRoute.builder(context)
                 .baseUrl("https://245.ip-51-68-139.eu/osrm/")
+                .accessToken(Mapbox.getAccessToken())
                 .profile("driving")
                 .origin(origin)
-                .accessToken(Mapbox.getAccessToken())
                 .destination(destination)
                 .build()
-                .enqueueCall(new Callback<DirectionsResponse>() {
+                .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
