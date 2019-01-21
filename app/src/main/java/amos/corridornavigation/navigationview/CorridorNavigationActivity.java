@@ -19,6 +19,7 @@ import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOpti
 import java.util.ArrayList;
 
 import amos.corridornavigation.R;
+import amos.corridornavigation.UpdateAlgorithm;
 
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
 
@@ -26,7 +27,8 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public static boolean backgroundInstance = false;
 
     DirectionsRoute mainDriectionRoute;
-    ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
+    public ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
+    UpdateAlgorithm updater;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,22 +49,28 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         // Receiver needs to be registered to be able to receive massage later from main Activity
         registerReceiver(broadcastReceiver, new IntentFilter("finish_activity"));
 
+        Intent i = getIntent();
+        updater = i.getParcelableExtra("extraUpdateAlgorithm");
+        updater.navigationActivity = this;
+        updater.startUpdateAlgorithm();
+
         navigationView = findViewById(R.id.navigationView);
         navigationView.onCreate(savedInstanceState);
         navigationView.initialize(this);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         navigationView.onStart();
+        //updater.startUpdateAlgorithm();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         navigationView.onResume();
+        //updater.startUpdateAlgorithm();
         backgroundInstance = false;
     }
 
@@ -96,18 +104,21 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onPause() {
         super.onPause();
         navigationView.onPause();
+        updater.stopUpdateAlgorithm();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         navigationView.onStop();
+        updater.stopUpdateAlgorithm();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         navigationView.onDestroy();
+        updater.stopUpdateAlgorithm();
     }
 
     @Override
@@ -146,6 +157,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
     }
     public void onClickNaviPause(View view){
+        updater.stopUpdateAlgorithm();
         Intent intent=new Intent();//CorridorNavigationActivity.this, amos.corridornavigation.MainActivity.class);
         intent.setClassName(this,"amos.corridornavigation.MainActivity");
         intent.putExtra("naviIsPaused",true);

@@ -2,6 +2,7 @@ package amos.corridornavigation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -52,6 +53,8 @@ public class MainActivity extends MapContext {
     public AutoCompleteTextView autoCompleteTextView;
     private AutoCompleteTextView addressSearchBar;
 
+    public UpdateAlgorithm updater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +63,10 @@ public class MainActivity extends MapContext {
         ImageButton naviButton =  findViewById(R.id.button);
         naviButton.setVisibility(View.INVISIBLE);
         initMapView(savedInstanceState);
+
+        updater = new UpdateAlgorithm();
+        updater.classContext = this;
+        updater.router = locationMarker;
 
         addressSearchBar = (AutoCompleteTextView)
                 findViewById(R.id.main_searchbar_input);
@@ -238,6 +245,10 @@ public class MainActivity extends MapContext {
         {
             intent.putExtra("DirectionsRoute_"+i,routes.get(i));
         }
+
+        intent.putExtra("extraUpdateAlgorithm", updater);
+
+        updater.startUpdateAlgorithm();
 
         startActivity(intent);
     }
