@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import android.view.View;
 
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
+import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
@@ -19,22 +23,27 @@ import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOpti
 import java.util.ArrayList;
 
 import amos.corridornavigation.R;
+import amos.corridornavigation.Router;
 import amos.corridornavigation.UpdateAlgorithm;
 
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
 
     NavigationView navigationView;
+    private Router locationMarker = new Router();
+    private int delay = 20000;
+    private Handler handler;
     public static boolean backgroundInstance = false;
 
     DirectionsRoute mainDriectionRoute;
     public ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
-    UpdateAlgorithm updater;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_corridor_navigation);
+
+        handler = new Handler();
 
         mainDriectionRoute = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_0");
         //The MainDirectionRoute must be the first in the ArrayList
@@ -49,11 +58,6 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         // Receiver needs to be registered to be able to receive massage later from main Activity
         registerReceiver(broadcastReceiver, new IntentFilter("finish_activity"));
 
-        Intent i = getIntent();
-        updater = i.getParcelableExtra("extraUpdateAlgorithm");
-        updater.navigationActivity = this;
-        updater.startUpdateAlgorithm();
-
         navigationView = findViewById(R.id.navigationView);
         navigationView.onCreate(savedInstanceState);
         navigationView.initialize(this);
@@ -63,15 +67,64 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onStart() {
         super.onStart();
         navigationView.onStart();
-        //updater.startUpdateAlgorithm();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         navigationView.onResume();
-        //updater.startUpdateAlgorithm();
         backgroundInstance = false;
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("Executing the update algorithm...");
+                /*
+                System.out.println("Deleting the old alternatives...");
+                // Remove all current alternatives
+                for (int i=1; i < routes.size(); i += 1) {
+                    intent.removeExtra("DirectionsRoute_"+i);
+                }
+                System.out.println("Calculating and adding the new alternatives...");
+                sendBroadcast(intentNavigation);
+                for (int i=0; i < routes.size(); i += 1) {
+                    intent.putExtra("DirectionsRoute_"+i, routes.get(i));
+                }
+                */
+                if (locationMarker == null) {
+                    System.out.println("...but router is null :(");
+                }
+                else {
+                    MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
+                    LatLng originPoint = new LatLng();
+                    originPoint.setLatitude(map.getLocationComponent().getLastKnownLocation().getLatitude());
+                    originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
+                    Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+
+                    System.out.println("Current position: "+currentPoint.toString());
+                    System.out.println("Size of the marker list: "+map.getMarkers().size());
+                    if (map.getMarkers().size() > 0) {
+                        for (int i=0; i < map.getMarkers().size(); i+=1) {
+                            System.out.println("Marker "+i+": "+map.getMarkers().get(i).toString());
+                        }
+                    }
+
+                    originPoint = map.getMarkers().get(0).getPosition();
+                    Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+
+
+                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint , destinationPoint);
+                    ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
+                    if (routes != null) {
+                        System.out.println("Calculated new routes: "+routes.toString());
+                        System.out.println("Total number of routes: "+routes.size());
+                        navigationView.retrieveNavigationMapboxMap().drawRoutes(routes);
+                    }
+                    else {
+                        System.out.println("Calculated routes are null");
+                    }
+                }
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
     @Override
@@ -104,23 +157,24 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onPause() {
         super.onPause();
         navigationView.onPause();
-        updater.stopUpdateAlgorithm();
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         navigationView.onStop();
-        updater.stopUpdateAlgorithm();
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         navigationView.onDestroy();
-        updater.stopUpdateAlgorithm();
+        handler.removeCallbacksAndMessages(null);
     }
 
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onNavigationReady(boolean isRunning) {
 
@@ -142,6 +196,60 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
 
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("Executing the update algorithm...");
+                /*
+                System.out.println("Deleting the old alternatives...");
+                // Remove all current alternatives
+                for (int i=1; i < routes.size(); i += 1) {
+                    intent.removeExtra("DirectionsRoute_"+i);
+                }
+                System.out.println("Calculating and adding the new alternatives...");
+                sendBroadcast(intentNavigation);
+                for (int i=0; i < routes.size(); i += 1) {
+                    intent.putExtra("DirectionsRoute_"+i, routes.get(i));
+                }
+                */
+                if (locationMarker == null) {
+                    System.out.println("...but router is null :(");
+                }
+                else {
+                    MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
+                    LatLng originPoint = new LatLng();
+                    originPoint.setLatitude(map.getLocationComponent().getLastKnownLocation().getLatitude());
+                    originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
+                    Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+
+                    System.out.println("Current position: "+currentPoint.toString());
+                    System.out.println("Size of the marker list: "+map.getMarkers().size());
+                    if (map.getMarkers().size() > 0) {
+                        for (int i=0; i < map.getMarkers().size(); i+=1) {
+                            System.out.println("Marker "+i+": "+map.getMarkers().get(i).toString());
+                        }
+                    }
+
+                    originPoint = map.getMarkers().get(0).getPosition();
+                    Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+
+
+                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint , destinationPoint);
+                    ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
+                    if (routes != null) {
+                        System.out.println("Calculated new routes: "+routes.toString());
+                        System.out.println("Total number of routes: "+routes.size());
+                        navigationView.retrieveNavigationMapboxMap().drawRoutes(routes);
+                    }
+                    else {
+                        System.out.println("Calculated routes are null");
+                    }
+                }
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+
+        Context c = this;
+
         //navigationView.retrieveNavigationMapboxMap().removeRoute(); // Removes all Alt-Routes
 
 
@@ -157,7 +265,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
     }
     public void onClickNaviPause(View view){
-        updater.stopUpdateAlgorithm();
+        handler.removeCallbacksAndMessages(null);
         Intent intent=new Intent();//CorridorNavigationActivity.this, amos.corridornavigation.MainActivity.class);
         intent.setClassName(this,"amos.corridornavigation.MainActivity");
         intent.putExtra("naviIsPaused",true);

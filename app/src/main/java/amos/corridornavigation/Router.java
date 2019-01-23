@@ -1,5 +1,7 @@
 package amos.corridornavigation;
 
+import android.content.Context;
+import android.location.Location;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -10,6 +12,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
@@ -94,6 +97,45 @@ public class Router {
                             navigationMapRoute = new NavigationMapRoute(null, context.mapView, context.mapboxMap, R.style.NavigationMapRouteGreen);
                         }
                         navigationMapRoute.addRoutes(currentRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Timber.e("Error: %s", throwable.getMessage());
+                    }
+                });
+    }
+
+    public void getRoute(Context context, Point origin, Point destination) {
+
+        if (context != null) {
+            System.out.println("context = " + context.toString());
+        }
+        else {
+            System.out.println("Context is null -.-");
+        }
+        MapboxDirections.Builder directionsBuilder = MapboxDirections.builder();
+
+        NavigationRoute.builder(context)
+                .baseUrl("https://245.ip-51-68-139.eu/osrm/")
+                .accessToken(Mapbox.getAccessToken())
+                .profile("driving")
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        // You can get the generic HTTP info about the response
+                        System.out.println(response.code());
+                        if (response.body() == null) {
+                            Timber.e("No routes found, make sure you set the right user and access token.");
+                            return; } else if (response.body().routes().size() < 1) {
+                            Timber.e("No routes found");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes();
                     }
 
                     @Override
