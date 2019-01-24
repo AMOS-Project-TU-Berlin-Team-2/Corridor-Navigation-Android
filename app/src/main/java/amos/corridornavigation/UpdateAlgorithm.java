@@ -51,7 +51,10 @@ public class UpdateAlgorithm implements Parcelable {
         mData = in.readInt();
     }
 
-    public UpdateAlgorithm() {
+    public UpdateAlgorithm(MainActivity classContext, Router router, CorridorNavigationActivity navigationActivity) {
+        this.classContext=classContext;
+        this.router=router;
+        this.navigationActivity=navigationActivity;
     }
 
     public void startUpdateAlgorithm() {

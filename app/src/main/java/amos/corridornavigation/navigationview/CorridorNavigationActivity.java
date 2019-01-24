@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 
 import amos.corridornavigation.R;
 import amos.corridornavigation.Router;
-import amos.corridornavigation.UpdateAlgorithm;
 
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
 
@@ -76,7 +76,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         backgroundInstance = false;
         handler.postDelayed(new Runnable() {
             public void run() {
-                System.out.println("Executing the update algorithm...");
+                Log.d("test1","Executing the update algorithm...");
                 /*
                 System.out.println("Deleting the old alternatives...");
                 // Remove all current alternatives
@@ -198,7 +198,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         handler.postDelayed(new Runnable() {
             public void run() {
-                System.out.println("Executing the update algorithm...");
+                Log.i("test1","Executing the update algorithm...");
                 /*
                 System.out.println("Deleting the old alternatives...");
                 // Remove all current alternatives
@@ -221,11 +221,11 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                     originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
                     Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
 
-                    System.out.println("Current position: "+currentPoint.toString());
-                    System.out.println("Size of the marker list: "+map.getMarkers().size());
+                    Log.v("test1","Current position: "+currentPoint.toString());
+                    Log.v("test1","Size of the marker list: "+map.getMarkers().size());
                     if (map.getMarkers().size() > 0) {
                         for (int i=0; i < map.getMarkers().size(); i+=1) {
-                            System.out.println("Marker "+i+": "+map.getMarkers().get(i).toString());
+                            Log.v("test1","Marker "+i+": "+map.getMarkers().get(i).toString());
                         }
                     }
 
@@ -236,12 +236,12 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                     locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint , destinationPoint);
                     ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
                     if (routes != null) {
-                        System.out.println("Calculated new routes: "+routes.toString());
-                        System.out.println("Total number of routes: "+routes.size());
+                        Log.d("test1","Calculated new routes: "+routes.toString());
+                        Log.d("test1","Total number of routes: "+routes.size());
                         navigationView.retrieveNavigationMapboxMap().drawRoutes(routes);
                     }
                     else {
-                        System.out.println("Calculated routes are null");
+                        Log.d("test1","Calculated routes are null");
                     }
                 }
                 handler.postDelayed(this, delay);
