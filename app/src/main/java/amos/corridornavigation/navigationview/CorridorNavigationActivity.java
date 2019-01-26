@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
@@ -44,6 +46,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         setContentView(R.layout.activity_corridor_navigation);
 
         handler = new Handler();
+        MapView mapView = findViewById(R.id.mapView);
 
         mainDriectionRoute = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_0");
         //The MainDirectionRoute must be the first in the ArrayList
@@ -69,14 +72,21 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         navigationView.onStart();
     }
 
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onResume() {
         super.onResume();
         navigationView.onResume();
         backgroundInstance = false;
+        setupHandler();
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void setupHandler() {
+        locationMarker.act = this;
         handler.postDelayed(new Runnable() {
             public void run() {
-                Log.d("test1","Executing the update algorithm...");
+                Log.i("test1", "Executing the update algorithm...");
                 /*
                 System.out.println("Deleting the old alternatives...");
                 // Remove all current alternatives
@@ -91,46 +101,81 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 */
                 if (locationMarker == null) {
                     System.out.println("...but router is null :(");
-                }
-                else {
+                } else {
                     MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
+
                     LatLng originPoint = new LatLng();
                     originPoint.setLatitude(map.getLocationComponent().getLastKnownLocation().getLatitude());
                     originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
                     Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
 
-                    System.out.println("Current position: "+currentPoint.toString());
-                    System.out.println("Size of the marker list: "+map.getMarkers().size());
+                    Log.v("test1", "Current position: " + currentPoint.toString());
+                    Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
                     if (map.getMarkers().size() > 0) {
-                        for (int i=0; i < map.getMarkers().size(); i+=1) {
-                            System.out.println("Marker "+i+": "+map.getMarkers().get(i).toString());
+                        for (int i = 0; i < map.getMarkers().size(); i += 1) {
+                            Log.v("test1", "Marker " + i + ": " + map.getMarkers().get(i).toString());
                         }
                     }
 
                     originPoint = map.getMarkers().get(0).getPosition();
                     Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
 
+                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
 
-                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint , destinationPoint);
-                    ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
-                    if (routes != null) {
-                        System.out.println("Calculated new routes: "+routes.toString());
-                        System.out.println("Total number of routes: "+routes.size());
-                        navigationView.retrieveNavigationMapboxMap().drawRoutes(routes);
-                    }
-                    else {
-                        System.out.println("Calculated routes are null");
-                    }
                 }
                 handler.postDelayed(this, delay);
             }
         }, delay);
     }
 
+    public void drawNewRoutes() {
+        ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
+        Log.d("test1","Received new routes.");
+        if (routes != null) {
+            navigationView.stopNavigation();
+
+            MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(true).build();
+
+            mainDriectionRoute = routes.get(0);
+            alternativeDirectionsRoutes.clear();
+            for (int i=0; i<routes.size(); i+=1) {
+                alternativeDirectionsRoutes.add(routes.get(i));
+            }
+
+            NavigationViewOptions options = NavigationViewOptions.builder()
+                    .directionsRoute(mainDriectionRoute)
+                    .navigationOptions(navigationOptions)
+                    .shouldSimulateRoute(true)
+
+                    .milestoneEventListener((routeProgress, instruction, milestone) -> {
+
+                    })
+                    .build();
+
+            navigationView.startNavigation(options);
+            //navigationView.retrieveNavigationMapboxMap().showAlternativeRoutes(true);
+
+            //navigationView.retrieveNavigationMapboxMap().drawRoute(mainDriectionRoute);
+
+            /**
+             * Important: The main route has to be the first element of the alternativeDirectionsRoutes-list
+             * Otherwise the routes disappear immediately after drawing.
+             * Additionally, it seems like the only way to really get rid of the primary black route is
+             * to stop the navigation and restart it. Otherwise it keeps overwriting the new routes.
+             */
+            navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
+        }
+            else {
+                Log.d("test1","Calculated routes are null");
+            }
+    }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         navigationView.onLowMemory();
+        Log.d("test1", "Ran into low memory; shutting down handler.");
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -196,66 +241,13 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
 
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                Log.i("test1","Executing the update algorithm...");
-                /*
-                System.out.println("Deleting the old alternatives...");
-                // Remove all current alternatives
-                for (int i=1; i < routes.size(); i += 1) {
-                    intent.removeExtra("DirectionsRoute_"+i);
-                }
-                System.out.println("Calculating and adding the new alternatives...");
-                sendBroadcast(intentNavigation);
-                for (int i=0; i < routes.size(); i += 1) {
-                    intent.putExtra("DirectionsRoute_"+i, routes.get(i));
-                }
-                */
-                if (locationMarker == null) {
-                    System.out.println("...but router is null :(");
-                }
-                else {
-                    MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
-                    LatLng originPoint = new LatLng();
-                    originPoint.setLatitude(map.getLocationComponent().getLastKnownLocation().getLatitude());
-                    originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
-                    Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
-
-                    Log.v("test1","Current position: "+currentPoint.toString());
-                    Log.v("test1","Size of the marker list: "+map.getMarkers().size());
-                    if (map.getMarkers().size() > 0) {
-                        for (int i=0; i < map.getMarkers().size(); i+=1) {
-                            Log.v("test1","Marker "+i+": "+map.getMarkers().get(i).toString());
-                        }
-                    }
-
-                    originPoint = map.getMarkers().get(0).getPosition();
-                    Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
-
-
-                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint , destinationPoint);
-                    ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
-                    if (routes != null) {
-                        Log.d("test1","Calculated new routes: "+routes.toString());
-                        Log.d("test1","Total number of routes: "+routes.size());
-                        navigationView.retrieveNavigationMapboxMap().drawRoutes(routes);
-                    }
-                    else {
-                        Log.d("test1","Calculated routes are null");
-                    }
-                }
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
-
-        Context c = this;
+        setupHandler();
 
         //navigationView.retrieveNavigationMapboxMap().removeRoute(); // Removes all Alt-Routes
 
 
         /*MapView mapView = navigationView.findViewById(com.mapbox.services.android.navigation.ui.v5.R.id.navigationMapView);
         MapboxMap mapboxMap = navigationView.retrieveNavigationMapboxMap().retrieveMap();
-
         NavigationMapRoute yellow_router = new NavigationMapRoute(null, mapView,mapboxMap, R.style.NavigationMapRouteYellow);
         yellow_router.addRoutes(alternativeDirectionsRoutes);
         yellow_router.showAlternativeRoutes(true);*/

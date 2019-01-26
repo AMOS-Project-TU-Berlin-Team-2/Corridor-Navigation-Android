@@ -2,6 +2,7 @@ package amos.corridornavigation;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -12,6 +13,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
@@ -19,6 +21,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import java.util.List;
 import java.util.ArrayList;
 
+import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +34,8 @@ public class Router {
 
     public List<DirectionsRoute> currentRoute;
     private NavigationMapRoute navigationMapRoute;
+
+    public CorridorNavigationActivity act;
 
     public Router()
     {
@@ -90,6 +95,16 @@ public class Router {
 
                         currentRoute = response.body().routes();
 
+                        Log.d("test1","Calculated new routes: "+currentRoute.toString());
+                        Log.d("test1","Total number of routes: "+currentRoute.size());
+                        for (int i=0; i < currentRoute.size(); i+=1) {
+                            for (int j=0; j < currentRoute.get(i).legs().size(); j+=1) {
+                                for (int k=0; k < currentRoute.get(i).legs().get(j).steps().size(); k+=1) {
+                                    Log.d("test1", "Route "+i+", Leg "+j+", Step "+k+" = "+currentRoute.get(i).legs().get(j).steps().get(k).toString());
+                                }
+                            }
+                        }
+
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
@@ -104,6 +119,7 @@ public class Router {
                         Timber.e("Error: %s", throwable.getMessage());
                     }
                 });
+        System.out.println("test1: Initially: Calculated route to destination: "+destination.toString());
     }
 
     public void getRoute(Context context, Point origin, Point destination) {
@@ -136,6 +152,17 @@ public class Router {
                         }
 
                         currentRoute = response.body().routes();
+                        act.drawNewRoutes();
+
+                        Log.d("test1","Calculated new routes: "+currentRoute.toString());
+                        Log.d("test1","Total number of routes: "+currentRoute.size());
+                        for (int i=0; i < currentRoute.size(); i+=1) {
+                            for (int j=0; j < currentRoute.get(i).legs().size(); j+=1) {
+                                for (int k=0; k < currentRoute.get(i).legs().get(j).steps().size(); k+=1) {
+                                    Log.d("test1", "Route "+i+", Leg "+j+", Step "+k+" = "+currentRoute.get(i).legs().get(j).steps().get(k).toString());
+                                }
+                            }
+                        }
                     }
 
                     @Override
@@ -143,5 +170,6 @@ public class Router {
                         Timber.e("Error: %s", throwable.getMessage());
                     }
                 });
+        System.out.println("test1: On Update: Calculated route to destination: "+destination.toString());
     }
 }
