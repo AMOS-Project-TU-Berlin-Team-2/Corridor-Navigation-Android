@@ -31,7 +31,7 @@ import amos.corridornavigation.Router;
 public class CorridorNavigationActivity extends AppCompatActivity implements OnNavigationReadyCallback {
 
     NavigationView navigationView;
-    private Router locationMarker = new Router();
+    private Router locationMarker;
     private int delay = 20000;
     private Handler handler;
     public static boolean backgroundInstance = false;
@@ -44,6 +44,8 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_corridor_navigation);
+
+        locationMarker  = new Router();
 
         handler = new Handler();
         MapView mapView = findViewById(R.id.mapView);
@@ -78,6 +80,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         super.onResume();
         navigationView.onResume();
         backgroundInstance = false;
+        locationMarker  = new Router();
         setupHandler();
     }
 
@@ -162,6 +165,10 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
              * Otherwise the routes disappear immediately after drawing.
              * Additionally, it seems like the only way to really get rid of the primary black route is
              * to stop the navigation and restart it. Otherwise it keeps overwriting the new routes.
+             *
+             * TODO: Sometimes, the last known location is far off the current route, which leads to a weird recalculated route
+             * Perhaps it is related to a default location if the last one is unknown or something.
+             * Has to be fixed, but once we found out how to use the upcoming intersection for that, this shouldn't be a problem.
              */
             navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
         }
@@ -202,6 +209,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onPause() {
         super.onPause();
         navigationView.onPause();
+        locationMarker = null;
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -209,6 +217,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     public void onStop() {
         super.onStop();
         navigationView.onStop();
+        locationMarker = null;
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -216,6 +225,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     protected void onDestroy() {
         super.onDestroy();
         navigationView.onDestroy();
+        locationMarker = null;
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -258,6 +268,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     }
     public void onClickNaviPause(View view){
         handler.removeCallbacksAndMessages(null);
+        locationMarker = null;
         Intent intent=new Intent();//CorridorNavigationActivity.this, amos.corridornavigation.MainActivity.class);
         intent.setClassName(this,"amos.corridornavigation.MainActivity");
         intent.putExtra("naviIsPaused",true);
