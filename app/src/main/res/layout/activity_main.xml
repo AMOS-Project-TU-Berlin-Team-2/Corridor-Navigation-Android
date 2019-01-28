@@ -44,6 +44,8 @@
             <Button
                 android:id="@+id/Navigate"
                 android:layout_width="175dp"
+                android:textColor="#ffffff"
+                android:background="@drawable/search_button"
                 android:layout_height="55dp"
                 android:layout_below="@+id/info_text"
                 android:layout_alignRight="@+id/info_text"
@@ -58,6 +60,8 @@
             <Button
                 android:id="@+id/Route"
                 android:layout_width="175dp"
+                android:textColor="#ffffff"
+                android:background="@drawable/search_button"
                 android:layout_height="55dp"
                 android:layout_below="@+id/info_text"
                 android:layout_alignLeft="@+id/info_text"
@@ -141,7 +145,7 @@
         mapbox:layout_constraintStart_toStartOf="parent"
         mapbox:layout_constraintTop_toTopOf="parent"
         mapbox:layout_constraintVertical_bias="0.818"
-        mapbox:srcCompat="@drawable/ic_right_arrow" />
+        mapbox:srcCompat="@drawable/ic_iconfinder_arrow_right" />
 
 
     <android.support.design.widget.FloatingActionButton
