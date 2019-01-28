@@ -19,6 +19,7 @@ import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
+import com.mapbox.api.directions.v5.models.RouteLeg;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -29,6 +30,9 @@ import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
 
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
+import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +48,8 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     private Handler handler;
     public static boolean backgroundInstance = false;
     public Boolean simulateRoute = false;
+    public int previousLegIndex = 0;
+    public Boolean triggerUpdate = false;
 
     DirectionsRoute mainDriectionRoute;
     public ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
@@ -91,12 +97,12 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         navigationView.onResume();
         backgroundInstance = false;
         locationMarker  = new Router();
-        setupHandler();
+        //setupHandler();
     }
 
     @SuppressWarnings("MissingPermission")
     private void setupHandler() {
-        locationMarker.act = this;
+
 
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -116,39 +122,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 if (locationMarker == null) {
                     System.out.println("...but router is null :(");
                 } else {
-                    MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
-
-                    try {
-                        Location lastLocation = map.getLocationComponent().getLastKnownLocation();//getLocationEngine().getLastLocation();
-                        LatLng originPoint = new LatLng();
-                        originPoint.setLatitude(lastLocation.getLatitude());
-                        originPoint.setLongitude(lastLocation.getLongitude());
-                        originPoint.setAltitude(lastLocation.getAltitude());
-                        Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
-
-                        // Obviously a mistake in location calculations, so do not execute an update
-                        if (Math.abs(currentPoint.longitude()) < 0.01 && Math.abs(currentPoint.latitude()) < 0.01) {
-                            return;
-                        }
-
-                        Log.d("test1", "Current position = "+currentPoint.toString());
-
-                        Log.v("test1", "Current position: " + currentPoint.toString());
-                        Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
-                        if (map.getMarkers().size() > 0) {
-                            for (int i = 0; i < map.getMarkers().size(); i += 1) {
-                                Log.v("test1", "Marker " + i + ": " + map.getMarkers().get(i).toString());
-                            }
-                        }
-
-                        originPoint = map.getMarkers().get(0).getPosition();
-                        Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
-
-                        locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
-                    } catch (NullPointerException e) {
-                        Log.d("Calculation error", "The last location was null.");
-                    }
-
+                    updateMechanism();
                 }
                 handler.postDelayed(this, delay);
             }
@@ -175,17 +149,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 navigationView.retrieveNavigationMapboxMap().retrieveMap().removeMarker(markerList.remove(0));
             }
 
-            NavigationViewOptions options = NavigationViewOptions.builder()
-                    .directionsRoute(mainDriectionRoute)
-                    .navigationOptions(navigationOptions)
-                    .shouldSimulateRoute(simulateRoute)
-
-                    .milestoneEventListener((routeProgress, instruction, milestone) -> {
-
-                    })
-                    .build();
-
-            navigationView.startNavigation(options);
+            startNavigation(true);
             //navigationView.retrieveNavigationMapboxMap().showAlternativeRoutes(true);
 
             //navigationView.retrieveNavigationMapboxMap().drawRoute(mainDriectionRoute);
@@ -274,7 +238,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         CorridorNavigationActivity.this.simulateRoute = true;
-                        startNavigation();
+                        startNavigation(false);
                         dialog.cancel();
                     }
                 });
@@ -283,7 +247,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 "No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        startNavigation();
+                        startNavigation(false);
                         dialog.cancel();
                     }
                 });
@@ -305,13 +269,34 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
     }
 
-    private void startNavigation() {
+    private void startNavigation(Boolean createNewHandler) {
         MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(true).build();
 
         NavigationViewOptions options = NavigationViewOptions.builder()
                 .directionsRoute(mainDriectionRoute)
                 .navigationOptions(navigationOptions)
                 .shouldSimulateRoute(simulateRoute)
+                .progressChangeListener(new ProgressChangeListener() {
+                    @SuppressWarnings("MissingPermission")
+                    @Override
+                    public void onProgressChange(Location location, RouteProgress routeProgress) {
+                        //Log.d("test1", "Triggered location change");
+                        Log.d("test1", "Remaining distance = "+routeProgress.currentLegProgress().currentStepProgress().distanceRemaining());
+                        //routeProgress.currentLeg().steps().get(0).intersections().
+                        //routeProgress.currentLegProgress().stepIndex()
+                        if (routeProgress.currentLegProgress().currentStepProgress().distanceRemaining() < 50) {
+                            if (CorridorNavigationActivity.this.triggerUpdate) {
+                                Log.d("Update Mechanism", "Triggered the update");
+                                CorridorNavigationActivity.this.triggerUpdate = false;
+                                updateMechanism();
+                            }
+                        }
+                        else {
+                            CorridorNavigationActivity.this.triggerUpdate = true;
+                        }
+                            //updateMechanism();
+                    }
+                })
 
                 .milestoneEventListener((routeProgress, instruction, milestone) -> {
 
@@ -324,7 +309,47 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
 
-        setupHandler();
+        if (createNewHandler) {
+            //setupHandler();
+        }
+    }
+
+    @SuppressWarnings("MissingPermission")
+    public void updateMechanism() {
+        locationMarker.act = this;
+        MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
+
+        try {
+            Location lastLocation = map.getLocationComponent().getLastKnownLocation();//getLocationEngine().getLastLocation();
+            LatLng originPoint = new LatLng();
+            originPoint.setLatitude(lastLocation.getLatitude());
+            originPoint.setLongitude(lastLocation.getLongitude());
+            originPoint.setAltitude(lastLocation.getAltitude());
+            Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
+
+            // Obviously a mistake in location calculations, so do not execute an update
+            if (Math.abs(currentPoint.longitude()) < 0.01 && Math.abs(currentPoint.latitude()) < 0.01) {
+                return;
+            }
+
+            Log.d("test1", "Current position = " + currentPoint.toString());
+
+            Log.v("test1", "Current position: " + currentPoint.toString());
+            Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
+            if (map.getMarkers().size() > 0) {
+                for (int i = 0; i < map.getMarkers().size(); i += 1) {
+                    Log.v("test1", "Marker " + i + ": " + map.getMarkers().get(i).toString());
+                }
+            }
+
+            originPoint = map.getMarkers().get(0).getPosition();
+            Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
+
+            locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
+
+        } catch (NullPointerException e) {
+
+        }
     }
 
     public void onClickNaviPause(View view){
