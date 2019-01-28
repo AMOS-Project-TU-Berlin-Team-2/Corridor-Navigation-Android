@@ -2,11 +2,13 @@ package amos.corridornavigation.navigationview;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,7 @@ import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -27,6 +30,7 @@ import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
 
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import java.util.ArrayList;
+import java.util.List;
 
 import amos.corridornavigation.R;
 import amos.corridornavigation.Router;
@@ -39,6 +43,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     private int delay = 20000;
     private Handler handler;
     public static boolean backgroundInstance = false;
+    public Boolean simulateRoute = false;
 
     DirectionsRoute mainDriectionRoute;
     public ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
@@ -118,7 +123,15 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                         LatLng originPoint = new LatLng();
                         originPoint.setLatitude(lastLocation.getLatitude());
                         originPoint.setLongitude(lastLocation.getLongitude());
-                        Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+                        originPoint.setAltitude(lastLocation.getAltitude());
+                        Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
+
+                        // Obviously a mistake in location calculations, so do not execute an update
+                        if (Math.abs(currentPoint.longitude()) < 0.01 && Math.abs(currentPoint.latitude()) < 0.01) {
+                            return;
+                        }
+
+                        Log.d("test1", "Current position = "+currentPoint.toString());
 
                         Log.v("test1", "Current position: " + currentPoint.toString());
                         Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
@@ -129,7 +142,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                         }
 
                         originPoint = map.getMarkers().get(0).getPosition();
-                        Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+                        Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
 
                         locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
                     } catch (NullPointerException e) {
@@ -152,14 +165,20 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
             mainDriectionRoute = routes.get(0);
             alternativeDirectionsRoutes.clear();
+            navigationView.retrieveNavigationMapboxMap().removeRoute();
             for (int i=0; i<routes.size(); i+=1) {
                 alternativeDirectionsRoutes.add(routes.get(i));
+            }
+
+            List<Marker> markerList = navigationView.retrieveNavigationMapboxMap().retrieveMap().getMarkers();
+            while (markerList.size() > 1) {
+                navigationView.retrieveNavigationMapboxMap().retrieveMap().removeMarker(markerList.remove(0));
             }
 
             NavigationViewOptions options = NavigationViewOptions.builder()
                     .directionsRoute(mainDriectionRoute)
                     .navigationOptions(navigationOptions)
-                    .shouldSimulateRoute(true)
+                    .shouldSimulateRoute(simulateRoute)
 
                     .milestoneEventListener((routeProgress, instruction, milestone) -> {
 
@@ -244,25 +263,33 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     @Override
     public void onNavigationReady(boolean isRunning) {
 
-        MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(true).build();
+        simulateRoute = false;
 
-        NavigationViewOptions options = NavigationViewOptions.builder()
-                .directionsRoute(mainDriectionRoute)
-                .navigationOptions(navigationOptions)
-                .shouldSimulateRoute(true)
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(CorridorNavigationActivity.this);
+        builder1.setMessage("Do you want to start a demo mode of the navigation?");
+        builder1.setCancelable(true);
 
-                .milestoneEventListener((routeProgress, instruction, milestone) -> {
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        CorridorNavigationActivity.this.simulateRoute = true;
+                        startNavigation();
+                        dialog.cancel();
+                    }
+                });
 
-                })
-                .build();
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        startNavigation();
+                        dialog.cancel();
+                    }
+                });
 
-
-        navigationView.startNavigation(options);
-        navigationView.retrieveNavigationMapboxMap().showAlternativeRoutes(true);
-
-        navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
-
-        setupHandler();
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
 
         //navigationView.retrieveNavigationMapboxMap().removeRoute(); // Removes all Alt-Routes
 
@@ -277,6 +304,29 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         //red_router.addRoute(alternativeDirectionsRoutes.get(2));
 
     }
+
+    private void startNavigation() {
+        MapboxNavigationOptions navigationOptions = MapboxNavigationOptions.builder().defaultMilestonesEnabled(true).build();
+
+        NavigationViewOptions options = NavigationViewOptions.builder()
+                .directionsRoute(mainDriectionRoute)
+                .navigationOptions(navigationOptions)
+                .shouldSimulateRoute(simulateRoute)
+
+                .milestoneEventListener((routeProgress, instruction, milestone) -> {
+
+                })
+                .build();
+
+
+        navigationView.startNavigation(options);
+        navigationView.retrieveNavigationMapboxMap().showAlternativeRoutes(true);
+
+        navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
+
+        setupHandler();
+    }
+
     public void onClickNaviPause(View view){
         handler.removeCallbacksAndMessages(null);
         locationMarker = null;
