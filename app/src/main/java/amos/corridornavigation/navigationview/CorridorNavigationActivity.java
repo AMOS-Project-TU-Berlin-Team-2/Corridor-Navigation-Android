@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.mapbox.android.core.location.LocationEngine;
+import com.mapbox.android.core.location.LocationEnginePriority;
+import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
 import com.mapbox.geojson.Point;
@@ -32,12 +35,14 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
     NavigationView navigationView;
     private Router locationMarker;
+    private LocationEngine locationEngine;
     private int delay = 20000;
     private Handler handler;
     public static boolean backgroundInstance = false;
 
     DirectionsRoute mainDriectionRoute;
     public ArrayList<DirectionsRoute> alternativeDirectionsRoutes = new ArrayList<>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,6 +92,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
     @SuppressWarnings("MissingPermission")
     private void setupHandler() {
         locationMarker.act = this;
+
         handler.postDelayed(new Runnable() {
             public void run() {
                 Log.i("test1", "Executing the update algorithm...");
@@ -107,23 +113,28 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                 } else {
                     MapboxMap map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
 
-                    LatLng originPoint = new LatLng();
-                    originPoint.setLatitude(map.getLocationComponent().getLastKnownLocation().getLatitude());
-                    originPoint.setLongitude(map.getLocationComponent().getLastKnownLocation().getLongitude());
-                    Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+                    try {
+                        Location lastLocation = map.getLocationComponent().getLastKnownLocation();//getLocationEngine().getLastLocation();
+                        LatLng originPoint = new LatLng();
+                        originPoint.setLatitude(lastLocation.getLatitude());
+                        originPoint.setLongitude(lastLocation.getLongitude());
+                        Point currentPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
 
-                    Log.v("test1", "Current position: " + currentPoint.toString());
-                    Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
-                    if (map.getMarkers().size() > 0) {
-                        for (int i = 0; i < map.getMarkers().size(); i += 1) {
-                            Log.v("test1", "Marker " + i + ": " + map.getMarkers().get(i).toString());
+                        Log.v("test1", "Current position: " + currentPoint.toString());
+                        Log.v("test1", "Size of the marker list: " + map.getMarkers().size());
+                        if (map.getMarkers().size() > 0) {
+                            for (int i = 0; i < map.getMarkers().size(); i += 1) {
+                                Log.v("test1", "Marker " + i + ": " + map.getMarkers().get(i).toString());
+                            }
                         }
+
+                        originPoint = map.getMarkers().get(0).getPosition();
+                        Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
+
+                        locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
+                    } catch (NullPointerException e) {
+                        Log.d("Calculation error", "The last location was null.");
                     }
-
-                    originPoint = map.getMarkers().get(0).getPosition();
-                    Point destinationPoint = Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude());
-
-                    locationMarker.getRoute(CorridorNavigationActivity.this, currentPoint, destinationPoint);
 
                 }
                 handler.postDelayed(this, delay);

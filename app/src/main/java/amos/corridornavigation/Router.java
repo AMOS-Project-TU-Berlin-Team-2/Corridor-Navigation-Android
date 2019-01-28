@@ -95,6 +95,8 @@ public class Router {
 
                         currentRoute = response.body().routes();
 
+                        /*
+
                         Log.d("test1","Calculated new routes: "+currentRoute.toString());
                         Log.d("test1","Total number of routes: "+currentRoute.size());
                         for (int i=0; i < currentRoute.size(); i+=1) {
@@ -104,6 +106,7 @@ public class Router {
                                 }
                             }
                         }
+                        */
 
                         // Draw the route on the map
                         if (navigationMapRoute != null) {
@@ -154,6 +157,7 @@ public class Router {
                         currentRoute = response.body().routes();
                         act.drawNewRoutes();
 
+                        /*
                         Log.d("test1","Calculated new routes: "+currentRoute.toString());
                         Log.d("test1","Total number of routes: "+currentRoute.size());
                         for (int i=0; i < currentRoute.size(); i+=1) {
@@ -163,6 +167,7 @@ public class Router {
                                 }
                             }
                         }
+                        */
                     }
 
                     @Override
@@ -170,6 +175,6 @@ public class Router {
                         Timber.e("Error: %s", throwable.getMessage());
                     }
                 });
-        System.out.println("test1: On Update: Calculated route to destination: "+destination.toString());
+        //System.out.println("test1: On Update: Calculated route to destination: "+destination.toString());
     }
 }
