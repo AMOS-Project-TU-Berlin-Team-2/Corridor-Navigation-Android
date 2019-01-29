@@ -13,7 +13,7 @@
     <style name="CustomNavigationMapRoute" parent="@style/NavigationMapRoute">
 
         <!-- Main color for the route line -->
-        <item name="routeColor">#000</item>
+        <item name="routeColor">#00FF00</item>
         <!-- Outline color for the route line -->
         <item name="routeShieldColor">#2C5F99</item>
 
