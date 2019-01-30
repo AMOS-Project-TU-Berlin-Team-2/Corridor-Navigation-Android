@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#8694a5</color>
+    <color name="colorPrimary">#8694A5</color>
     <color name="colorPrimaryDark">#727E8D</color>
-    <color name="colorAccent">#ffffff</color>
+    <color name="colorAccent">#FFFFFF</color>
     <color name="colorSearchbar">#ffffff</color>
     <color name="mapbox_navigation_route_alternative_color">#7ebcfb</color>
     <color name="mapbox_navigation_route_alternative_congestion_red">#e9646d</color>

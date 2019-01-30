@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context=".MainActivity">
+
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:mapbox_cameraTargetLat="52.520008"
+        mapbox:mapbox_cameraTargetLng="13.404954"
+        mapbox:mapbox_cameraZoom="12"
+        mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10">
+
+
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+    <!-- A CardView that contains a TextView -->
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_width="0dp"
+        android:layout_height="224dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        card_view:cardCornerRadius="4dp"
+        card_view:layout_constraintBottom_toBottomOf="@+id/mapView"
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintHorizontal_bias="0.526"
+        card_view:layout_constraintStart_toStartOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:padding="8dp">
+
+            <Button
+                android:id="@+id/Navigate"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_below="@+id/info_text"
+                android:layout_alignRight="@+id/info_text"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="195dp"
+                android:layout_marginTop="-61dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginBottom="0dp"
+                android:background="@color/colorPrimary"
+                android:onClick="onNavigateButtonClicked"
+                android:text="Start Navigation"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/Route"
+                android:layout_width="184dp"
+                android:layout_height="64dp"
+                android:layout_below="@+id/info_text"
+                android:layout_alignLeft="@+id/info_text"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="-8dp"
+                android:layout_marginTop="-61dp"
+                android:layout_marginBottom="0dp"
+                android:background="@color/colorPrimary"
+                android:onClick="onRouteButtonClicked"
+                android:text="Show Route"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/info_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="8dp"
+                android:autoText="false"
+                android:textSize="24sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/search_navi_ui"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="1.0"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/main_searchbar_input"
+            android:layout_width="257dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/main_searchbar_input"
+            android:elevation="10dp"
+            android:hint="@string/address"
+            android:padding="10dp" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="fill_parent" />
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="164dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_button"
+            android:elevation="10dp"
+            android:onClick="onSearchButtonClicked"
+            android:padding="10dp"
+            android:text="@string/search"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="80dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onBackToNaviClicked"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="0.975"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="@+id/hide_button"
+        mapbox:layout_constraintVertical_bias="0.423"
+        mapbox:srcCompat="@drawable/ic_right_arrow" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="actionButtonPressed"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="0.975"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent"
+        mapbox:layout_constraintVertical_bias="0.718"
+        mapbox:srcCompat="@drawable/mapbox_compass_icon" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/hide_button"
+        android:layout_width="wrap_content"
+        android:layout_height="145dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="80dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onHideButtonClicked"
+        mapbox:layout_constraintBottom_toBottomOf="parent"
+        mapbox:layout_constraintEnd_toEndOf="parent"
+        mapbox:layout_constraintHorizontal_bias="0.975"
+        mapbox:layout_constraintStart_toStartOf="parent"
+        mapbox:layout_constraintTop_toTopOf="parent"
+        mapbox:layout_constraintVertical_bias="0.698"
+        mapbox:srcCompat="@drawable/closed_eye_icon" />
+
+
+
+</android.support.constraint.ConstraintLayout>

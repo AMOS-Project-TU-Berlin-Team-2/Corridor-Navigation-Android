@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:label,android:allowBackup">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter android:priority="0">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -31,7 +33,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".navigationview.CorridorNavigationActivity"></activity>
+        <activity android:name=".navigationview.CorridorNavigationActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
     </application>
 </manifest>
