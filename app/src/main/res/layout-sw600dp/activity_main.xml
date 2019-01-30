@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
 
@@ -15,9 +17,8 @@
         mapbox:mapbox_cameraTargetLat="52.520008"
         mapbox:mapbox_cameraTargetLng="13.404954"
         mapbox:mapbox_cameraZoom="12"
-        mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        mapbox:mapbox_styleUrl="mapbox://styles/mapbox/streets-v10">
+
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
@@ -30,7 +31,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="12dp"
-        android:visibility="visible"
+        android:visibility="gone"
         card_view:cardCornerRadius="4dp"
         card_view:layout_constraintBottom_toBottomOf="@+id/mapView"
         card_view:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +88,6 @@
                 android:layout_marginStart="0dp"
                 android:layout_marginBottom="8dp"
                 android:autoText="false"
-                android:text="HELOO"
                 android:textSize="24sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
