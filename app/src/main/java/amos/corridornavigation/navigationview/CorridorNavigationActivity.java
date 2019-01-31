@@ -1,13 +1,17 @@
 package amos.corridornavigation.navigationview;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +36,8 @@ import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
+import com.mapbox.turf.TurfConstants;
+import com.mapbox.turf.TurfMeasurement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +67,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_corridor_navigation);
 
-        locationMarker  = new Router();
+        locationMarker = new Router();
 
         handler = new Handler();
         MapView mapView = findViewById(R.id.mapView);
@@ -71,8 +77,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
 
         DirectionsRoute route;
         int c = 0;
-        while((route = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_"+c)) != null)
-        {
+        while ((route = (DirectionsRoute) getIntent().getSerializableExtra("DirectionsRoute_" + c)) != null) {
             c++;
             alternativeDirectionsRoutes.add(route);
         }
@@ -96,42 +101,13 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         super.onResume();
         navigationView.onResume();
         backgroundInstance = false;
-        locationMarker  = new Router();
+        locationMarker = new Router();
         //setupHandler();
-    }
-
-    @SuppressWarnings("MissingPermission")
-    private void setupHandler() {
-
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                Log.i("test1", "Executing the update algorithm...");
-                /*
-                System.out.println("Deleting the old alternatives...");
-                // Remove all current alternatives
-                for (int i=1; i < routes.size(); i += 1) {
-                    intent.removeExtra("DirectionsRoute_"+i);
-                }
-                System.out.println("Calculating and adding the new alternatives...");
-                sendBroadcast(intentNavigation);
-                for (int i=0; i < routes.size(); i += 1) {
-                    intent.putExtra("DirectionsRoute_"+i, routes.get(i));
-                }
-                */
-                if (locationMarker == null) {
-                    System.out.println("...but router is null :(");
-                } else {
-                    updateMechanism();
-                }
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
     }
 
     public void drawNewRoutes() {
         ArrayList<DirectionsRoute> routes = (ArrayList) locationMarker.currentRoute;
-        Log.d("test1","Received new routes.");
+        Log.d("test1", "Received new routes.");
         if (routes != null) {
             navigationView.stopNavigation();
 
@@ -140,7 +116,7 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
             mainDriectionRoute = routes.get(0);
             alternativeDirectionsRoutes.clear();
             navigationView.retrieveNavigationMapboxMap().removeRoute();
-            for (int i=0; i<routes.size(); i+=1) {
+            for (int i = 0; i < routes.size(); i += 1) {
                 alternativeDirectionsRoutes.add(routes.get(i));
             }
 
@@ -150,10 +126,6 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
             }
 
             startNavigation(true);
-            //navigationView.retrieveNavigationMapboxMap().showAlternativeRoutes(true);
-
-            //navigationView.retrieveNavigationMapboxMap().drawRoute(mainDriectionRoute);
-
             /**
              * Important: The main route has to be the first element of the alternativeDirectionsRoutes-list
              * Otherwise the routes disappear immediately after drawing.
@@ -165,10 +137,9 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
              * Has to be fixed, but once we found out how to use the upcoming intersection for that, this shouldn't be a problem.
              */
             navigationView.retrieveNavigationMapboxMap().drawRoutes(alternativeDirectionsRoutes); // Print all Alt-Routes
+        } else {
+            Log.d("test1", "Calculated routes are null");
         }
-            else {
-                Log.d("test1","Calculated routes are null");
-            }
     }
 
     @Override
@@ -281,20 +252,38 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
                     @Override
                     public void onProgressChange(Location location, RouteProgress routeProgress) {
                         //Log.d("test1", "Triggered location change");
-                        Log.d("test1", "Remaining distance = "+routeProgress.currentLegProgress().currentStepProgress().distanceRemaining());
+
                         //routeProgress.currentLeg().steps().get(0).intersections().
                         //routeProgress.currentLegProgress().stepIndex()
-                        if (routeProgress.currentLegProgress().currentStepProgress().distanceRemaining() < 50) {
+                        MapboxMap map = null;
+                        Point upcomingIntersection = null;
+                        try {
+                            map = navigationView.retrieveNavigationMapboxMap().retrieveMap();
+                        } catch (Exception e) {
+                            System.err.println("unable to retrieve map : " + e.getMessage());
+                        }
+                        try {
+                            upcomingIntersection = routeProgress.currentLegProgress().currentStepProgress().upcomingIntersection().location();
+                        } catch (Exception e) {
+                            System.err.println("error while retrieving next intersection location : " + e.getMessage());
+                        }
+                        assert map != null;
+                        assert upcomingIntersection != null;
+
+                        Point currentPoint = getUserLocation(map);
+
+                        double distanceToNextIntersection = TurfMeasurement.distance(currentPoint, upcomingIntersection, TurfConstants.UNIT_METERS);
+                        Log.d("Update Mechanism", "Remaining distance to next intersection = " + distanceToNextIntersection);
+                        if (distanceToNextIntersection < 50) {
                             if (CorridorNavigationActivity.this.triggerUpdate) {
-                                Log.d("Update Mechanism", "Triggered the update");
+                                Log.i("Update Mechanism", "Triggered the update");
                                 CorridorNavigationActivity.this.triggerUpdate = false;
                                 updateMechanism();
                             }
-                        }
-                        else {
+                        } else {
                             CorridorNavigationActivity.this.triggerUpdate = true;
                         }
-                            //updateMechanism();
+                        //updateMechanism();
                     }
                 })
 
@@ -312,6 +301,15 @@ public class CorridorNavigationActivity extends AppCompatActivity implements OnN
         if (createNewHandler) {
             //setupHandler();
         }
+    }
+
+    private Point getUserLocation(MapboxMap map) {
+        @SuppressLint("MissingPermission") Location lastLocation = map.getLocationComponent().getLastKnownLocation();//getLocationEngine().getLastLocation();
+        LatLng originPoint = new LatLng();
+        originPoint.setLatitude(lastLocation.getLatitude());
+        originPoint.setLongitude(lastLocation.getLongitude());
+        originPoint.setAltitude(lastLocation.getAltitude());
+        return Point.fromLngLat(originPoint.getLongitude(), originPoint.getLatitude(), originPoint.getAltitude());
     }
 
     @SuppressWarnings("MissingPermission")
