@@ -81,7 +81,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="0dp"
-                android:text="HELOO" />
+                android:text="Calculating destination address..." />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

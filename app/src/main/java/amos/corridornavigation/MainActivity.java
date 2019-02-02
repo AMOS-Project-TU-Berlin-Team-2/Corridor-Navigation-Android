@@ -2,7 +2,6 @@ package amos.corridornavigation;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -10,19 +9,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.Toast;
 
-import com.mapbox.api.directions.v5.DirectionsCriteria;
-import com.mapbox.api.directions.v5.models.BannerInstructions;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.directions.v5.models.LegStep;
-import com.mapbox.api.directions.v5.models.RouteLeg;
-import com.mapbox.api.directions.v5.models.StepManeuver;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
@@ -31,11 +23,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
-import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
-import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
-import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +49,7 @@ public class MainActivity extends MapContext {
         naviButton.setVisibility(View.INVISIBLE);
         initMapView(savedInstanceState);
 
-        addressSearchBar = (AutoCompleteTextView)
-                findViewById(R.id.main_searchbar_input);
+        addressSearchBar = findViewById(R.id.main_searchbar_input);
 
         this.adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {""});
         this.adapter.setNotifyOnChange(true);

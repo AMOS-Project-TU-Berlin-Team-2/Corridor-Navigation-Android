@@ -88,6 +88,7 @@
                 android:layout_marginStart="0dp"
                 android:layout_marginBottom="8dp"
                 android:autoText="false"
+                android:text="Calculating destination address..."
                 android:textSize="24sp" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>

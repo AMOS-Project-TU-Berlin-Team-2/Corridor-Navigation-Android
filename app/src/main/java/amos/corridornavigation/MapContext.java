@@ -6,14 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +25,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.geometry.LatLngSpan;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -39,10 +35,8 @@ import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 
 import java.util.List;
-import java.util.Locale;
 
 import amos.corridornavigation.navigationview.CorridorNavigationActivity;
 import retrofit2.Call;
@@ -50,9 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-//public class MapContext extends AppCompatActivity implements LocationEngineListener, PermissionsListener, OnMapReadyCallback, MapboxMap.OnMapClickListener {
 public class MapContext extends AppCompatActivity implements LocationEngineListener, PermissionsListener, OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener{
-
 
     protected MapView mapView;
 
@@ -69,7 +61,6 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     private LatLng destinationPoint;    // To be used for calculating the route when pressing the route button
     private TextView textInCardView;    // To avoid complicated access to the text view within the card view
 
-
     protected void initMapView(Bundle savedInstanceState) {
         locationMarker = new Router();
 
@@ -77,7 +68,6 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
-
 
     protected void setCameraPosition(Location location)
     {
@@ -88,21 +78,30 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,13.0));
     }
 
+    /**
+     * On clicking on the map, the app requests a geocode search to retrieve the real address of the
+     * selected location. Also triggers the router to set the destination marker
+     * @param point: the manually selected location
+     */
     @Override
     public void onMapClick(@NonNull LatLng point){
 
-        //locationMarker.setDestinationMarkerPosition(this, point);
         destinationPoint = point;
-        CardView cardView = (CardView)findViewById(R.id.card_view);
+        CardView cardView = findViewById(R.id.card_view);
         cardView.setVisibility(View.VISIBLE);
         ViewGroup viewGroup = ((ViewGroup) cardView.getChildAt(0));
         textInCardView = (TextView) viewGroup.getChildAt(2);
         makeGeocodeSearch(point);
-        locationMarker.setDestinationMarkerPosition(this, destinationPoint, false);
+        locationMarker.setDestinationMarkerPosition(this, destinationPoint, false, false);
     }
 
+    /**
+     * Trigger route calculation from the current start location (the user position) to the target
+     * In the router, a short hint is triggered to indicate that the route is being calculated -
+     * in this method it would not work as easy, due to the asynchronous call.
+     */
     public void onRouteButtonClicked() {
-        locationMarker.setDestinationMarkerPosition(this, destinationPoint, true);
+        locationMarker.setDestinationMarkerPosition(this, destinationPoint, true, true);
         LatLng originLatLng = new LatLng();
         originLatLng.setLatitude(originLocation.getLatitude());
         originLatLng.setLongitude(originLocation.getLongitude());
@@ -160,7 +159,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
     @Override
     public void onMapLongClick(@NonNull LatLng point){
 
-        LinearLayout search_navi_ui = (LinearLayout) findViewById(R.id.search_navi_ui);
+        LinearLayout search_navi_ui = findViewById(R.id.search_navi_ui);
         FloatingActionButton hideButton = findViewById(R.id.hide_button);
         FloatingActionButton compassButton = findViewById(R.id.floatingActionButton2);
         ImageButton naviButton =  findViewById(R.id.button);

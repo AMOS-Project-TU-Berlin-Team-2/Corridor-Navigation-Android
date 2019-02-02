@@ -10,6 +10,7 @@
 
     <!-- Messages -->
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
+    <string name="user_route_loading">The route is being calculated.</string>
 
     <!-- Error Messsages -->
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
