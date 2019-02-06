@@ -197,7 +197,11 @@ public class MainActivity extends MapContext {
     }
 
     public void onRouteButtonClicked(View view) {
-        super.onRouteButtonClicked();
+        if (super.originLocation != null) {
+            super.onRouteButtonClicked();
+        } else {
+            Toast.makeText(this, R.string.user_location_not_available, Toast.LENGTH_LONG).show();
+        }
     }
 
 

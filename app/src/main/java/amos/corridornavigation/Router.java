@@ -102,7 +102,7 @@ public class Router {
                     @Override
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         // You can get the generic HTTP info about the response
-                        toast.cancel();
+                        if(toast != null) toast.cancel();
                         System.out.println(response.code());
                         if (response.body() == null) {
                             Timber.e("No routes found, make sure you set the right user and access token.");

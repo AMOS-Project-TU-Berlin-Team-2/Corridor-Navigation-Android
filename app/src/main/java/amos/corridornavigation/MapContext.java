@@ -222,7 +222,7 @@ public class MapContext extends AppCompatActivity implements LocationEngineListe
         if(location != null)
         {
             originLocation = location;
-            setCameraPosition(location);
+            //setCameraPosition(location);
         }
         locationMarker.updateRoute(this);
     }
